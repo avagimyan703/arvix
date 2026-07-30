@@ -1,13 +1,37 @@
 {
   "categories": [
-    { "id": "chest", "name": "Грудь" },
-    { "id": "back", "name": "Спина" },
-    { "id": "shoulders", "name": "Плечи" },
-    { "id": "biceps", "name": "Бицепс" },
-    { "id": "triceps", "name": "Трицепс" },
-    { "id": "legs", "name": "Ноги" },
-    { "id": "forearms", "name": "Предплечье" },
-    { "id": "athletic", "name": "Атлетизм" }
+    {
+      "id": "chest",
+      "name": "Грудь"
+    },
+    {
+      "id": "back",
+      "name": "Спина"
+    },
+    {
+      "id": "shoulders",
+      "name": "Плечи"
+    },
+    {
+      "id": "biceps",
+      "name": "Бицепс"
+    },
+    {
+      "id": "triceps",
+      "name": "Трицепс"
+    },
+    {
+      "id": "legs",
+      "name": "Ноги"
+    },
+    {
+      "id": "forearms",
+      "name": "Предплечье"
+    },
+    {
+      "id": "athletic",
+      "name": "Атлетизм"
+    }
   ],
   "reels": {
     "DTYJR53iMkV": {
@@ -46,7 +70,6 @@
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DQriAW1gXRm/"
     },
-
     "DbTgI_yCUor": {
       "category": "back",
       "note": "Одна и та же тяга, разное включение спины",
@@ -89,7 +112,6 @@
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DQKuKzsCINm/"
     },
-
     "DT3FnDTlNFS": {
       "category": "shoulders",
       "note": "Плечи гантелями: все три пучка дельт и трапеция",
@@ -126,7 +148,6 @@
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DRbG7OoCYyg/"
     },
-
     "DT5jN3eE6SX": {
       "category": "biceps",
       "note": "Главная ошибка в сгибаниях на бицепс",
@@ -163,7 +184,6 @@
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DOEPIQTDXV7/"
     },
-
     "DTVxGW2ARFQ": {
       "category": "triceps",
       "note": "Правильно ли ты тренируешь трицепс",
@@ -200,7 +220,6 @@
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DNxuTpj0rb7/"
     },
-
     "DT1l6rQDvNr": {
       "category": "legs",
       "note": "Ягодицы или квадрицепс: как сместить акцент",
@@ -236,6 +255,54 @@
       "note": "Жим ногами: ошибки, которых надо избегать",
       "author": "appyoucan",
       "url": "https://www.instagram.com/p/DSge9FskROV/"
+    },
+    "DSp4iuCDM7I": {
+      "category": "forearms",
+      "note": "Упражнения на объём предплечья: обратные сгибания и сгибания кистей",
+      "author": "demicstory",
+      "url": "https://www.instagram.com/p/DSp4iuCDM7I/"
+    },
+    "DR3hp8YDUQ6": {
+      "category": "forearms",
+      "note": "Предплечья: тренировка на силу и объём",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DR3hp8YDUQ6/"
+    },
+    "DRqk8v3gtsF": {
+      "category": "forearms",
+      "note": "Бицепс и предплечья в одной связке",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DRqk8v3gtsF/"
+    },
+    "DRNG8shEXI5": {
+      "category": "forearms",
+      "note": "Сильные руки начинаются с предплечий",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DRNG8shEXI5/"
+    },
+    "DQ7P3wik_Ty": {
+      "category": "forearms",
+      "note": "Объём предплечья без зала",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DQ7P3wik_Ty/"
+    },
+    "DPY70OIk9OB": {
+      "category": "forearms",
+      "note": "Хват и сила: почему предплечья решают",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DPY70OIk9OB/"
+    },
+    "DN5n5V2ghle": {
+      "category": "forearms",
+      "note": "Предплечья: полный комплекс на силу и объём",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DN5n5V2ghle/"
+    },
+    "DMwElAsS-3n": {
+      "category": "forearms",
+      "note": "Предплечья: несколько простых повторов для начала",
+      "author": "appyoucan",
+      "url": "https://www.instagram.com/p/DMwElAsS-3n/"
     }
   }
 }
