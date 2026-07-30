@@ -1,0 +1,59 @@
+{
+  "title": "Full Body 3×/нед",
+  "days": [
+    {
+      "id": "tue",
+      "weekday": "Вторник",
+      "accent": "Грудь и спина",
+      "blocks": [
+        { "exercise": "bench-press", "sets": 3, "reps": [5, 8], "rir": 2, "rest": 180, "tempo": "2-0-1" },
+        { "exercise": "db-row", "sets": 3, "reps": [8, 10], "rir": 2, "rest": 120 },
+        { "exercise": "pull-up", "sets": 3, "reps": [6, 10], "rir": 2, "rest": 150 },
+        { "exercise": "incline-db-press", "sets": 2, "reps": [10, 12], "rir": 1, "rest": 120 },
+        { "exercise": "bulgarian-split-squat", "sets": 2, "reps": [8, 10], "rir": 2, "rest": 120 },
+        { "exercise": "leg-curl", "sets": 2, "reps": [10, 12], "rir": 1, "rest": 90 }
+      ],
+      "athletic": [
+        { "exercise": "bosu-balance", "format": "3 × 30 с на ногу", "rest": 30 },
+        { "exercise": "band-rotation", "format": "3 × 10 на сторону", "rest": 30 },
+        { "exercise": "jump-rope", "format": "3 × 45 с", "rest": 45 }
+      ]
+    },
+    {
+      "id": "thu",
+      "weekday": "Четверг",
+      "accent": "Ноги",
+      "blocks": [
+        { "exercise": "back-squat", "sets": 3, "reps": [5, 8], "rir": 2, "rest": 180, "tempo": "2-0-1" },
+        { "exercise": "db-rdl", "sets": 3, "reps": [8, 10], "rir": 2, "rest": 150, "tempo": "3-0-1" },
+        { "exercise": "leg-press", "sets": 2, "reps": [10, 12], "rir": 1, "rest": 120 },
+        { "exercise": "pull-up", "sets": 3, "reps": [6, 10], "rir": 2, "rest": 120 },
+        { "exercise": "db-bench-press", "sets": 3, "reps": [8, 10], "rir": 2, "rest": 120 },
+        { "exercise": "lateral-raise", "sets": 2, "reps": [12, 15], "rir": 1, "rest": 60 }
+      ],
+      "athletic": [
+        { "exercise": "agility-ladder", "format": "3 × 30 с", "rest": 30 },
+        { "exercise": "medball-slam", "format": "3 × 8", "rest": 45 },
+        { "exercise": "jump-rope", "format": "3 × 45 с", "rest": 45 }
+      ]
+    },
+    {
+      "id": "sun",
+      "weekday": "Воскресенье",
+      "accent": "Плечи и руки",
+      "blocks": [
+        { "exercise": "seated-db-press", "sets": 3, "reps": [6, 10], "rir": 2, "rest": 150 },
+        { "exercise": "leg-press", "sets": 3, "reps": [10, 12], "rir": 2, "rest": 120 },
+        { "exercise": "seated-row", "sets": 3, "reps": [8, 10], "rir": 2, "rest": 120 },
+        { "exercise": "lateral-raise", "sets": 3, "reps": [12, 15], "rir": 1, "rest": 60 },
+        { "exercise": "db-curl", "sets": 2, "reps": [10, 12], "rir": 1, "rest": 60 },
+        { "exercise": "triceps-pushdown", "sets": 2, "reps": [10, 12], "rir": 1, "rest": 60 }
+      ],
+      "athletic": [
+        { "exercise": "kettlebell-swing", "format": "3 × 12", "rest": 45 },
+        { "exercise": "squat-jump", "format": "3 × 5", "rest": 60 },
+        { "exercise": "jump-rope", "format": "3 × 45 с", "rest": 45 }
+      ]
+    }
+  ]
+}
