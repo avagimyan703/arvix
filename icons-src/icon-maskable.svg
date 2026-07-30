@@ -1,0 +1,12 @@
+<!-- Maskable-вариант: фон без закруглений (маску накладывает система), а гриф
+     сжат до 68%, чтобы целиком уместиться в безопасную зону круга 80%. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0f1115"/>
+  <g transform="translate(256,256) scale(0.68) translate(-256,-256)">
+    <rect x="96" y="232" width="320" height="48" rx="24" fill="#c6f24e"/>
+    <rect x="120" y="184" width="64" height="144" rx="28" fill="#c6f24e"/>
+    <rect x="328" y="184" width="64" height="144" rx="28" fill="#c6f24e"/>
+    <rect x="72" y="216" width="40" height="80" rx="18" fill="#c6f24e"/>
+    <rect x="400" y="216" width="40" height="80" rx="18" fill="#c6f24e"/>
+  </g>
+</svg>
