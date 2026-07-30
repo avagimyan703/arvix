@@ -1,62 +1,45 @@
-import ExerciseGif from './ExerciseGif.jsx'
+import ReelPlayer from './ReelPlayer.jsx'
 import { useOnline } from '../hooks/useOnline.js'
+import { reelForExercise } from '../lib/reels.js'
 import styles from './ExerciseDetail.module.css'
 
-// Из ссылки на рилс делаем адрес официального embed-эндпоинта Инстаграма.
-// Именно iframe, а не их embed.js: скрипт грузился бы в наше окно и тащил
-// трекинг внутрь приложения, а iframe остаётся на их стороне.
-function embedUrl(url) {
-  const m = String(url).match(/instagram\.com\/(?:[^/]+\/)?(reel|p|tv)\/([\w-]+)/)
-  return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed` : null
-}
-
-export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
+export default function ExerciseDetail({ exercise, exerciseId, library, onBack }) {
   const online = useOnline()
-  const embed = exercise.video ? embedUrl(exercise.video.url) : null
-
-  // Видео вытесняет гифку, но только когда его реально можно показать.
-  // Без сети плеер отрисовался бы пустым прямоугольником, поэтому в зале
-  // без связи на его месте снова гифка — она лежит в офлайн-кеше.
-  const showVideo = Boolean(embed) && online
+  const reel = reelForExercise(library, exercise)
 
   return (
     <div className={styles.screen}>
       <button className={styles.back} onClick={onBack}>← Назад</button>
 
-      {showVideo ? (
-        <div className={styles.embedWrap}>
-          {/* Подсказка лежит ПОД плеером и видна только если тот не
-              отрисовался: у cross-origin iframe провал загрузки не
-              отловить, а пустой прямоугольник читался бы как поломка. */}
-          <p className={styles.embedFallbackHint}>
-            Плеер не загрузился — открой по ссылке ниже.
-          </p>
-          <iframe
-            className={styles.embed}
-            src={embed}
-            title={`${exercise.name} — видео-разбор, ${exercise.video.author}`}
-            loading="lazy"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-          />
-        </div>
-      ) : (
-        <ExerciseGif id={exerciseId} name={exercise.name} size="detail" />
+      {reel && online && (
+        <ReelPlayer reel={reel} title={`${exercise.name} — разбор, ${reel.author}`} />
+      )}
+
+      {reel && !online && (
+        // Плеер без сети отрисовался бы пустым прямоугольником, поэтому
+        // вместо него говорим, чего не хватает. Текст ниже — в кеше.
+        <p className={styles.noVideo}>
+          Нет сети — видео появится, когда связь вернётся. Техника ниже работает офлайн.
+        </p>
+      )}
+
+      {!reel && (
+        <p className={styles.noVideo}>Видео к этому упражнению пока не добавлено.</p>
       )}
 
       <h1 className={styles.title}>{exercise.name}</h1>
       <p className={styles.equipment}>{exercise.equipment}</p>
 
-      {exercise.video && (
+      {reel && (
         <p className={styles.videoNote}>
-          {exercise.video.note} ·{' '}
+          {reel.note} ·{' '}
           <a
             className={styles.videoAuthor}
-            href={exercise.video.url}
+            href={reel.url}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {exercise.video.author} ↗
+            {reel.author} ↗
           </a>
         </p>
       )}

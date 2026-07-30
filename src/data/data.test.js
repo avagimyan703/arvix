@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import exercises from './exercises.json'
 import program from './program.json'
+import reels from './reels.json'
 
 const ALL_BLOCKS = program.days.flatMap((d) => d.blocks)
 const ALL_ATHLETIC = program.days.flatMap((d) => d.athletic)
@@ -72,18 +73,44 @@ describe('библиотека упражнений', () => {
     }
   })
 
-  it('если у упражнения есть видео, то заполнено целиком', () => {
-    for (const [id, ex] of Object.entries(exercises)) {
-      if (!ex.video) continue
-      expect(ex.video.url, `${id}: адрес видео`).toMatch(/^https:\/\//)
-      expect(ex.video.author, `${id}: автор видео`).toBeTruthy()
-      expect(ex.video.note, `${id}: о чём видео`).toBeTruthy()
+  it('идентификаторы в нижнем регистре через дефис', () => {
+    for (const id of Object.keys(exercises)) {
+      expect(id, `${id}`).toMatch(/^[a-z0-9-]+$/)
+    }
+  })
+})
+
+describe('библиотека рилсов', () => {
+  it('у категорий уникальные id и непустые названия', () => {
+    const ids = reels.categories.map((c) => c.id)
+    expect(new Set(ids).size, 'дубли id категорий').toBe(ids.length)
+    for (const c of reels.categories) {
+      expect(c.id, `${c.id}: id`).toMatch(/^[a-z-]+$/)
+      expect(c.name, `${c.id}: название`).toBeTruthy()
     }
   })
 
-  it('идентификаторы пригодны как имена файлов', () => {
-    for (const id of Object.keys(exercises)) {
-      expect(id, `${id}`).toMatch(/^[a-z0-9-]+$/)
+  it('каждый рилс заполнен целиком и лежит в известной категории', () => {
+    const known = new Set(reels.categories.map((c) => c.id))
+    for (const [id, r] of Object.entries(reels.reels)) {
+      expect(r.url, `${id}: адрес`).toMatch(/^https:\/\/www\.instagram\.com\//)
+      expect(r.author, `${id}: автор`).toBeTruthy()
+      expect(r.note, `${id}: о чём`).toBeTruthy()
+      expect(known.has(r.category), `${id}: категория «${r.category}» неизвестна`).toBe(true)
+    }
+  })
+
+  it('ключ рилса совпадает с кодом в его ссылке', () => {
+    for (const [id, r] of Object.entries(reels.reels)) {
+      expect(r.url, `${id}: ключ не совпадает со ссылкой`).toContain(`/${id}/`)
+    }
+  })
+
+  it('поле video у упражнения ссылается на существующий рилс', () => {
+    for (const [id, ex] of Object.entries(exercises)) {
+      if (!ex.video) continue
+      expect(typeof ex.video, `${id}: video должно быть ключом-строкой`).toBe('string')
+      expect(reels.reels[ex.video], `${id}: рилса «${ex.video}» нет в библиотеке`).toBeTruthy()
     }
   })
 })

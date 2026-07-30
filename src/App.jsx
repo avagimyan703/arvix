@@ -4,9 +4,12 @@ import { todayDayId, findDay } from './lib/program.js'
 import { useWorkout } from './hooks/useWorkout.js'
 import program from './data/program.json'
 import exercises from './data/exercises.json'
+import reelLibrary from './data/reels.json'
 import DayList from './components/DayList.jsx'
 import WorkoutScreen from './components/WorkoutScreen.jsx'
 import ExerciseDetail from './components/ExerciseDetail.jsx'
+import ReelCatalog from './components/ReelCatalog.jsx'
+import ReelCategory from './components/ReelCategory.jsx'
 
 export default function App() {
   const [route, setRoute] = useState(() => parseHash(window.location.hash))
@@ -47,7 +50,33 @@ export default function App() {
       <ExerciseDetail
         exercise={exercise}
         exerciseId={route.exerciseId}
+        library={reelLibrary}
         onBack={() => window.history.back()}
+      />
+    )
+  }
+
+  if (route.screen === 'reelCategory') {
+    const known = reelLibrary.categories.some((c) => c.id === route.categoryId)
+    if (!known) {
+      navigate({ screen: 'reels' })
+      return null
+    }
+    return (
+      <ReelCategory
+        library={reelLibrary}
+        categoryId={route.categoryId}
+        onBack={() => navigate({ screen: 'reels' })}
+      />
+    )
+  }
+
+  if (route.screen === 'reels') {
+    return (
+      <ReelCatalog
+        library={reelLibrary}
+        onPick={(categoryId) => navigate({ screen: 'reelCategory', categoryId })}
+        onBack={() => navigate({ screen: 'days' })}
       />
     )
   }
@@ -57,6 +86,7 @@ export default function App() {
       program={program}
       todayId={todayDayId(new Date())}
       onPick={(dayId) => navigate({ screen: 'workout', dayId })}
+      onOpenReels={() => navigate({ screen: 'reels' })}
     />
   )
 }

@@ -1,4 +1,3 @@
-import ExerciseGif from './ExerciseGif.jsx'
 import styles from './AthleticBlock.module.css'
 
 export default function AthleticBlock({ items, exercises, done, onToggle, onOpen }) {
@@ -14,17 +13,13 @@ export default function AthleticBlock({ items, exercises, done, onToggle, onOpen
           return (
             <li key={item.exercise} className={isDone ? `${styles.card} ${styles.done}` : styles.card}>
               <button
-                className={styles.gifBtn}
+                className={styles.meta}
                 onClick={() => onOpen(item.exercise)}
                 aria-label={`Техника: ${exercise.name}`}
               >
-                <ExerciseGif id={item.exercise} name={exercise.name} />
-              </button>
-
-              <div className={styles.meta}>
                 <span className={styles.name}>{exercise.name}</span>
                 <span className={styles.format}>{item.format} · отдых {item.rest} с</span>
-              </div>
+              </button>
 
               <button
                 className={styles.check}

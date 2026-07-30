@@ -12,6 +12,17 @@
   font-size: 16px;
 }
 
+.noVideo {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
 .title {
   margin: 16px 0 2px;
   font-size: 24px;
@@ -21,6 +32,19 @@
   margin: 0;
   color: var(--text-dim);
   font-size: 14px;
+}
+
+.videoNote {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.videoAuthor {
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
 }
 
 .section { margin-top: 28px; }
@@ -53,55 +77,3 @@
   border-radius: 0 var(--radius) var(--radius) 0;
   line-height: 1.5;
 }
-
-.videoNote {
-  margin: 10px 0 0;
-  font-size: 14px;
-  color: var(--text-dim);
-  line-height: 1.45;
-}
-
-.videoAuthor {
-  color: var(--text-dim);
-  text-decoration: underline;
-  text-decoration-color: var(--line);
-}
-
-/* Видео в embed'е Инстаграма лежит в боксе 5:4 — отсюда пропорция.
-   Обвязку прячем с двух сторон: шапку с автором сдвигом вверх на её
-   54px, нижнюю панель с лайками — за счёт height больше контейнера.
-   Автор при этом не теряется: он указан в ссылке под плеером. */
-.embedWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1.25;
-  overflow: hidden;
-  border-radius: var(--radius);
-  background: var(--surface-2);
-}
-
-.embedFallbackHint {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: grid;
-  place-content: center;
-  margin: 0;
-  padding: 0 24px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-dim);
-}
-
-.embed {
-  position: absolute;
-  top: -54px;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  height: calc(100% + 54px + 170px);
-  border: 0;
-}
-
-.embedWrap + .title { margin-top: 14px; }

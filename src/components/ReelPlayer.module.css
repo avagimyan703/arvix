@@ -1,0 +1,40 @@
+/* Видео в embed'е Инстаграма лежит в боксе 5:4 — отсюда пропорция.
+   Обвязку прячем с двух сторон: шапку с автором сдвигом вверх на её 54px,
+   нижнюю панель с лайками — за счёт height больше контейнера. */
+.wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.25;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-content: center;
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.fallbackLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.frame {
+  position: absolute;
+  top: -54px;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: calc(100% + 54px + 170px);
+  border: 0;
+}

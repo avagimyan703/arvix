@@ -1,4 +1,3 @@
-import ExerciseGif from './ExerciseGif.jsx'
 import SetTracker from './SetTracker.jsx'
 import { formatTime } from '../lib/timer.js'
 import { formatWeight } from '../lib/format.js'
@@ -18,16 +17,10 @@ export default function ExerciseRow({
 
   return (
     <article className={styles.row}>
-      <div className={styles.head}>
-        <button className={styles.gifBtn} onClick={onOpen} aria-label={`Техника: ${exercise.name}`}>
-          <ExerciseGif id={exerciseId} name={exercise.name} />
-        </button>
-
-        <div className={styles.meta}>
-          <button className={styles.name} onClick={onOpen}>{exercise.name}</button>
-          <p className={styles.params}>{params}</p>
-        </div>
-      </div>
+      <button className={styles.head} onClick={onOpen} aria-label={`Техника: ${exercise.name}`}>
+        <span className={styles.name}>{exercise.name}</span>
+        <span className={styles.params}>{params}</span>
+      </button>
 
       <div className={styles.weight}>
         <label className={styles.weightLabel} htmlFor={`w-${exerciseId}`}>Вес, кг</label>

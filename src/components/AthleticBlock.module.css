@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px;
+  padding: 12px 14px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -33,9 +33,13 @@
 
 .done { border-color: var(--accent); }
 
-.gifBtn { padding: 0; flex: none; }
-
-.meta { display: grid; gap: 2px; min-width: 0; }
+.meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
 
 .name { font-size: 16px; font-weight: 600; }
 

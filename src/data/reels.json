@@ -1,0 +1,20 @@
+{
+  "categories": [
+    { "id": "chest", "name": "Грудь" },
+    { "id": "back", "name": "Спина" },
+    { "id": "shoulders", "name": "Плечи" },
+    { "id": "biceps", "name": "Бицепс" },
+    { "id": "triceps", "name": "Трицепс" },
+    { "id": "legs", "name": "Ноги" },
+    { "id": "forearms", "name": "Предплечье" },
+    { "id": "athletic", "name": "Атлетизм" }
+  ],
+  "reels": {
+    "DbTgI_yCUor": {
+      "category": "back",
+      "note": "Одна и та же тяга, разное включение спины",
+      "author": "demicstory",
+      "url": "https://www.instagram.com/reel/DbTgI_yCUor/"
+    }
+  }
+}

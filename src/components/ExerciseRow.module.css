@@ -7,22 +7,21 @@
   border-radius: var(--radius);
 }
 
-.head { display: flex; gap: 14px; align-items: flex-start; }
-
-.gifBtn { padding: 0; flex: none; }
-
-.meta { display: grid; gap: 4px; min-width: 0; }
-
-.name {
+.head {
+  display: grid;
+  gap: 4px;
+  width: 100%;
   padding: 0;
   text-align: left;
-  font-size: 17px;
+}
+
+.name {
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.25;
 }
 
 .params {
-  margin: 0;
   color: var(--text-dim);
   font-size: 13px;
   line-height: 1.4;
