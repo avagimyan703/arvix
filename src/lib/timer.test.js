@@ -1,43 +1,70 @@
 import { describe, it, expect } from 'vitest'
-import { createTimer, startTimer, pauseTimer, tick, formatTime } from './timer.js'
+import { createTimer, startTimer, pauseTimer, remaining, isDone, formatTime } from './timer.js'
+
+// Время передаётся аргументом, а не берётся из Date.now() — иначе таймер
+// нельзя ни протестировать, ни починить: он обязан считать по метке времени,
+// а не по числу тиков.
+const T0 = 1_700_000_000_000
 
 describe('таймер', () => {
   it('создаётся остановленным на полном времени', () => {
-    expect(createTimer(180)).toEqual({ total: 180, remaining: 180, running: false, done: false })
+    const t = createTimer(180)
+    expect(t.total).toBe(180)
+    expect(t.running).toBe(false)
+    expect(remaining(t, T0)).toBe(180)
   })
 
-  it('запуск включает отсчёт', () => {
-    expect(startTimer(createTimer(60)).running).toBe(true)
+  it('после запуска остаток считается от метки времени', () => {
+    const t = startTimer(createTimer(180), T0)
+    expect(remaining(t, T0)).toBe(180)
+    expect(remaining(t, T0 + 1000)).toBe(179)
+    expect(remaining(t, T0 + 60_000)).toBe(120)
   })
 
-  it('тик уменьшает остаток на секунду', () => {
-    const t = tick(startTimer(createTimer(60)))
-    expect(t.remaining).toBe(59)
+  it('ГЛАВНОЕ: пропущенное время не теряется', () => {
+    // Экран погас на две минуты, интервалы в фоне не тикали.
+    // Остаток обязан быть посчитан по часам, а не по числу тиков.
+    const t = startTimer(createTimer(180), T0)
+    expect(remaining(t, T0 + 120_000)).toBe(60)
   })
 
-  it('на паузе тик ничего не меняет', () => {
-    const paused = pauseTimer(startTimer(createTimer(60)))
-    expect(tick(paused)).toEqual(paused)
+  it('в нуле останавливается и не уходит в минус', () => {
+    const t = startTimer(createTimer(5), T0)
+    expect(remaining(t, T0 + 5000)).toBe(0)
+    expect(remaining(t, T0 + 60_000)).toBe(0)
   })
 
-  it('в нуле останавливается и помечается завершённым', () => {
-    let t = startTimer(createTimer(2))
-    t = tick(t)
-    t = tick(t)
-    expect(t).toMatchObject({ remaining: 0, running: false, done: true })
+  it('завершённость определяется по времени', () => {
+    const t = startTimer(createTimer(5), T0)
+    expect(isDone(t, T0 + 4000)).toBe(false)
+    expect(isDone(t, T0 + 5000)).toBe(true)
+    expect(isDone(t, T0 + 99_000)).toBe(true)
   })
 
-  it('тик после нуля не уводит остаток в минус', () => {
-    let t = startTimer(createTimer(1))
-    t = tick(t)
-    t = tick(t)
-    expect(t.remaining).toBe(0)
+  it('незапущенный таймер завершённым не считается', () => {
+    expect(isDone(createTimer(5), T0)).toBe(false)
   })
 
-  it('пауза и повторный запуск сохраняют остаток', () => {
-    let t = tick(startTimer(createTimer(60)))
-    t = startTimer(pauseTimer(t))
-    expect(t).toMatchObject({ remaining: 59, running: true })
+  it('пауза замораживает остаток, время дальше не течёт', () => {
+    let t = startTimer(createTimer(180), T0)
+    t = pauseTimer(t, T0 + 60_000)
+    expect(remaining(t, T0 + 60_000)).toBe(120)
+    expect(remaining(t, T0 + 600_000)).toBe(120)
+    expect(t.running).toBe(false)
+  })
+
+  it('повторный запуск продолжает с замороженного остатка', () => {
+    let t = startTimer(createTimer(180), T0)
+    t = pauseTimer(t, T0 + 60_000)
+    t = startTimer(t, T0 + 600_000)
+    expect(remaining(t, T0 + 600_000)).toBe(120)
+    expect(remaining(t, T0 + 610_000)).toBe(110)
+  })
+
+  it('пауза на завершённом таймере оставляет ноль', () => {
+    let t = startTimer(createTimer(5), T0)
+    t = pauseTimer(t, T0 + 10_000)
+    expect(remaining(t, T0 + 10_000)).toBe(0)
   })
 
   it('форматирует время', () => {
