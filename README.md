@@ -30,9 +30,15 @@ npm run preview  просмотр собранного
 
 Набор собран из двух источников, оба со внятной лицензией.
 
-**11 плавных, по 36 кадров** — нарезаны из видео [wger](https://wger.de) (автор Goulart, CC-BY-SA 4.0) скриптом `scripts/wger-gifs.sh`: `bench-press`, `db-bench-press`, `incline-db-press`, `pull-up`, `leg-curl`, `leg-press`, `lateral-raise`, `seated-db-press`, `seated-row`, `db-curl`, `triceps-pushdown`. Лицензия требует атрибуции — она стоит в подвале главного экрана, убирать её нельзя.
+**11 плавных из wger** — нарезаны из видео [wger](https://wger.de) (автор Goulart, CC BY-SA 4.0) скриптом `scripts/wger-gifs.sh`: `bench-press`, `db-bench-press`, `incline-db-press`, `pull-up`, `leg-curl`, `leg-press`, `lateral-raise`, `seated-db-press`, `seated-row`, `db-curl`, `triceps-pushdown`.
 
-**10 двухкадровых** — склеены из пар «начальная позиция / конечная» базы [free-exercise-db](https://github.com/yuhonas/free-exercise-db) скриптом `scripts/build-gifs.sh`. Их стоит заменить, когда найдётся источник получше.
+**1 плавная с Викисклада** — `back-squat`, из [Wikimedia Commons](https://commons.wikimedia.org) (автор FitnessScape, CC BY 3.0). Список доступных видео там смотреть скриптом `scripts/list-commons-videos.js`.
+
+Все двенадцать плавных — по 36 кадров, 12 fps, 3 секунды. Обе лицензии требуют атрибуции: она стоит в подвале главного экрана, убирать её нельзя.
+
+**9 двухкадровых** — склеены из пар «начальная позиция / конечная» базы [free-exercise-db](https://github.com/yuhonas/free-exercise-db) скриптом `scripts/build-gifs.sh`.
+
+На Викискладе в той же серии есть ещё «Deadlift» и «Bent-over row», но они сознательно не взяты: там классическая тяга с пола и тяга штанги в наклоне с неопертым корпусом, а в программе стоят румынская тяга с гантелями и тяга гантели в упоре. Показывать не то упражнение, зато плавно — хуже, чем нужное, зато моргающее.
 
 Пять из двухкадровых приблизительные — движение то же, но снаряд или вариант другой: `bulgarian-split-squat`, `bosu-balance`, `band-rotation`, `medball-slam`, `kettlebell-swing`. Координационной лестницы нет ни в одном источнике. Эти шесть — первые кандидаты на свою съёмку.
 

@@ -32,9 +32,11 @@ export default function DayList({ program, todayId, onPick }) {
       {/* Атрибуция обязательна по CC-BY-SA 4.0 — под этой лицензией взяты
           видео, из которых нарезаны анимации упражнений. */}
       <footer className={styles.credits}>
-        Анимации: <a href="https://wger.de" className={styles.link}>wger.de</a> (Goulart,{' '}
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/" className={styles.link}>CC-BY-SA 4.0</a>)
-        и <a href="https://github.com/yuhonas/free-exercise-db" className={styles.link}>free-exercise-db</a>
+        Анимации: <a href="https://wger.de" className={styles.link}>wger.de</a> — Goulart,{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/" className={styles.link}>CC BY-SA 4.0</a>;{' '}
+        <a href="https://commons.wikimedia.org" className={styles.link}>Wikimedia Commons</a> — FitnessScape,{' '}
+        <a href="https://creativecommons.org/licenses/by/3.0/" className={styles.link}>CC BY 3.0</a>;{' '}
+        <a href="https://github.com/yuhonas/free-exercise-db" className={styles.link}>free-exercise-db</a>
       </footer>
     </div>
   )
