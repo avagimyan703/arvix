@@ -10,7 +10,7 @@
   background: var(--surface-2);
 }
 
-.fallback {
+.status {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -24,7 +24,7 @@
   color: var(--text-dim);
 }
 
-.fallbackLink {
+.statusLink {
   color: var(--accent);
   text-decoration: none;
 }
@@ -37,4 +37,11 @@
   width: 100%;
   height: calc(100% + 54px + 170px);
   border: 0;
+}
+
+/* Пока плеер не готов, держим его прозрачным, а не display:none —
+   скрытый через display iframe в части браузеров не начинает загрузку. */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
 }

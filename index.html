@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0f1115" />
+
+    <!-- Рукопожатие с хостами Инстаграма заранее: DNS, TLS и соединение
+         успевают пройти до того, как ты раскроешь первый плеер. Экономит
+         примерно полсекунды-секунду на мобильной сети. -->
+    <link rel="preconnect" href="https://www.instagram.com" crossorigin />
+    <link rel="preconnect" href="https://scontent.cdninstagram.com" crossorigin />
+    <link rel="preconnect" href="https://static.cdninstagram.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.instagram.com" />
+    <link rel="dns-prefetch" href="https://scontent.cdninstagram.com" />
+
     <title>Arvix</title>
   </head>
   <body>
