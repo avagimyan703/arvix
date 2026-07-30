@@ -1,7 +1,19 @@
 import ExerciseGif from './ExerciseGif.jsx'
+import { useOnline } from '../hooks/useOnline.js'
 import styles from './ExerciseDetail.module.css'
 
+// Из ссылки на рилс делаем адрес официального embed-эндпоинта Инстаграма.
+// Именно iframe, а не их embed.js: скрипт грузился бы в наше окно и тащил
+// трекинг внутрь приложения, а iframe остаётся на их стороне.
+function embedUrl(url) {
+  const m = String(url).match(/instagram\.com\/(?:[^/]+\/)?(reel|p|tv)\/([\w-]+)/)
+  return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed` : null
+}
+
 export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
+  const online = useOnline()
+  const embed = exercise.video ? embedUrl(exercise.video.url) : null
+
   return (
     <div className={styles.screen}>
       <button className={styles.back} onClick={onBack}>← Назад</button>
@@ -35,22 +47,46 @@ export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
 
       <p className={styles.tip}>{exercise.tip}</p>
 
-      {/* Обычная ссылка, а не встроенный плеер: встраивание требует чужого
-          скрипта, тянет трекинг и всё равно не заработает без сети, а гифка
-          выше работает офлайн. Есть сеть — смотришь разбор, нет — не мешает. */}
       {exercise.video && (
-        <a
-          className={styles.video}
-          href={exercise.video.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span className={styles.videoLabel}>Смотреть видео ↗</span>
-          <span className={styles.videoNote}>
-            {exercise.video.note} · {exercise.video.author}
-          </span>
-          <span className={styles.videoHint}>Нужен интернет</span>
-        </a>
+        <section className={styles.videoSection}>
+          <h2 className={styles.heading}>Видео-разбор</h2>
+          <p className={styles.videoNote}>{exercise.video.note}</p>
+
+          {online && embed ? (
+            <div className={styles.embedWrap}>
+              {/* Подсказка лежит ПОД плеером. Если Инстаграм отрисуется — он
+                  её закроет своим фоном. Если нет, увидишь текст, а не пустую
+                  дыру: у cross-origin iframe провал отрисовки не отловить. */}
+              <p className={styles.embedFallbackHint}>
+                Если плеер не появился, Instagram не даёт встроить этот рилс —
+                открой его по ссылке ниже.
+              </p>
+              <iframe
+                className={styles.embed}
+                src={embed}
+                title={`${exercise.name} — видео-разбор, ${exercise.video.author}`}
+                loading="lazy"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            // Пустой прямоугольник вместо плеера выглядел бы как поломка,
+            // поэтому без сети честно говорим, чего не хватает.
+            <p className={styles.videoOffline}>
+              Нет сети — видео появится, когда связь вернётся. Техника выше работает офлайн.
+            </p>
+          )}
+
+          <a
+            className={styles.videoFallback}
+            href={exercise.video.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Открыть в Instagram ↗ · {exercise.video.author}
+          </a>
+        </section>
       )}
     </div>
   )
