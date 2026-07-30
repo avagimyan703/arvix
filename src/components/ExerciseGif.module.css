@@ -1,0 +1,29 @@
+.row {
+  width: 84px;
+  height: 84px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+/* min-height нужен заглушке: без него div без содержимого схлопывается
+   в полоску. Реальной гифке он не мешает — object-fit: contain отцентрует
+   её в боксе, а фон закроет поля. */
+.detail {
+  width: 100%;
+  min-height: 220px;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  font-size: 28px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
