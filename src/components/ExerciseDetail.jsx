@@ -34,6 +34,24 @@ export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
       </section>
 
       <p className={styles.tip}>{exercise.tip}</p>
+
+      {/* Обычная ссылка, а не встроенный плеер: встраивание требует чужого
+          скрипта, тянет трекинг и всё равно не заработает без сети, а гифка
+          выше работает офлайн. Есть сеть — смотришь разбор, нет — не мешает. */}
+      {exercise.video && (
+        <a
+          className={styles.video}
+          href={exercise.video.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className={styles.videoLabel}>Смотреть видео ↗</span>
+          <span className={styles.videoNote}>
+            {exercise.video.note} · {exercise.video.author}
+          </span>
+          <span className={styles.videoHint}>Нужен интернет</span>
+        </a>
+      )}
     </div>
   )
 }

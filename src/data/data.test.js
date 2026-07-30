@@ -72,6 +72,15 @@ describe('библиотека упражнений', () => {
     }
   })
 
+  it('если у упражнения есть видео, то заполнено целиком', () => {
+    for (const [id, ex] of Object.entries(exercises)) {
+      if (!ex.video) continue
+      expect(ex.video.url, `${id}: адрес видео`).toMatch(/^https:\/\//)
+      expect(ex.video.author, `${id}: автор видео`).toBeTruthy()
+      expect(ex.video.note, `${id}: о чём видео`).toBeTruthy()
+    }
+  })
+
   it('идентификаторы пригодны как имена файлов', () => {
     for (const id of Object.keys(exercises)) {
       expect(id, `${id}`).toMatch(/^[a-z0-9-]+$/)
