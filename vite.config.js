@@ -5,6 +5,11 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  // GitHub Pages отдаёт проект с подпути (username.github.io/arvix/), а не
+  // с корня домена. Без base все ссылки на ассеты и манифест PWA целились
+  // бы в корень, где ничего нет, и офлайн-режим на реальном хостинге
+  // просто не собрался бы.
+  base: '/arvix/',
   plugins: [
     react(),
     VitePWA({
@@ -16,8 +21,10 @@ export default defineConfig({
         short_name: 'Arvix',
         description: 'Техника, подходы и прогрессия под рукой в зале',
         lang: 'ru',
-        start_url: '/',
-        scope: '/',
+        // Абсолютные '/' указывали бы на корень домена, а не на подпуть
+        // GitHub Pages — из-за этого «добавить на экран» открывало бы 404.
+        start_url: '/arvix/',
+        scope: '/arvix/',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#0f1115',
@@ -29,13 +36,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Гифки тяжелее стандартного лимита в 2 МБ — поднимаем, иначе они
-        // не попадут в предварительный кеш и в зале без сети не откроются.
-        //
-        // png в шаблоне нет намеренно: иконки в предкеш добавляет сам плагин
-        // из манифеста, и шаблон продублировал бы их вторыми записями.
-        globPatterns: ['**/*.{js,css,html,json,gif}'],
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,json}'],
       },
     }),
   ],
