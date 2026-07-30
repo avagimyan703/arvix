@@ -1,0 +1,48 @@
+.row {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.head { display: flex; gap: 14px; align-items: flex-start; }
+
+.gifBtn { padding: 0; flex: none; }
+
+.meta { display: grid; gap: 4px; min-width: 0; }
+
+.name {
+  padding: 0;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.params {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.weight { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.weightLabel { font-size: 14px; color: var(--text-dim); }
+
+.weightInput {
+  width: 96px;
+  height: var(--tap);
+  padding: 0 12px;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.hint { font-size: 13px; color: var(--text-dim); }

@@ -1,0 +1,72 @@
+.wrap { display: grid; gap: 10px; }
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.circle {
+  width: var(--tap);
+  height: var(--tap);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--surface-2);
+  border: 2px solid var(--line);
+  border-radius: 50%;
+}
+
+.done {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.stepBtn {
+  width: var(--tap);
+  height: var(--tap);
+  font-size: 26px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.stepValue {
+  min-width: 40px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.stepDone {
+  min-height: var(--tap);
+  padding: 0 18px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.stepClear {
+  min-height: var(--tap);
+  padding: 0 14px;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.stepHint {
+  width: 100%;
+  font-size: 13px;
+  color: var(--text-dim);
+}
