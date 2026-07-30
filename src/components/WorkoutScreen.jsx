@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import ExerciseRow from './ExerciseRow.jsx'
 import AthleticBlock from './AthleticBlock.jsx'
 import RestTimer from './RestTimer.jsx'
@@ -8,10 +9,16 @@ import styles from './WorkoutScreen.module.css'
 
 export default function WorkoutScreen({
   day, exercises, state, onStart, onWeight, onCloseSet, onClearSet,
-  onToggleAthletic, onFinish, onOpen, onBack,
+  onToggleAthletic, onFinish, onCancel, onOpen, onBack,
 }) {
   const rest = useRestTimer()
+  const [confirmCancel, setConfirmCancel] = useState(false)
   const current = state.current?.dayId === day.id ? state.current : null
+
+  function handleCancel() {
+    setConfirmCancel(false)
+    onCancel()
+  }
 
   const suggestions = day.blocks
     .map((block) => {
@@ -74,6 +81,19 @@ export default function WorkoutScreen({
           />
 
           <button className={styles.finish} onClick={onFinish}>Завершить тренировку</button>
+
+          {/* Два шага, а не native confirm(): один случайный тап не должен
+              стирать уже отмеченные подходы текущей сессии. */}
+          {confirmCancel ? (
+            <div className={styles.cancelConfirmRow}>
+              <button className={styles.cancelConfirm} onClick={handleCancel}>Да, отменить</button>
+              <button className={styles.cancelBack} onClick={() => setConfirmCancel(false)}>Нет, продолжить</button>
+            </div>
+          ) : (
+            <button className={styles.cancel} onClick={() => setConfirmCancel(true)}>
+              Отменить тренировку
+            </button>
+          )}
         </>
       )}
 

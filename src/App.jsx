@@ -35,6 +35,7 @@ export default function App() {
         onClearSet={w.clearSet}
         onToggleAthletic={w.toggleAthletic}
         onFinish={() => { w.finishWorkout(); navigate({ screen: 'days' }) }}
+        onCancel={() => { w.cancelWorkout(); navigate({ screen: 'days' }) }}
         onOpen={(exerciseId) => navigate({ screen: 'exercise', exerciseId })}
         onBack={() => navigate({ screen: 'days' })}
       />

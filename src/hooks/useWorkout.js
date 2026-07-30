@@ -41,5 +41,9 @@ export function useWorkout() {
     finishWorkout: useCallback(() => {
       apply((s) => workout.finishWorkout(s, new Date().toISOString().slice(0, 10)))
     }, [apply]),
+
+    cancelWorkout: useCallback(() => {
+      apply((s) => workout.cancelWorkout(s))
+    }, [apply]),
   }
 }

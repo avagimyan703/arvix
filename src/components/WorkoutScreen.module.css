@@ -56,3 +56,37 @@
 }
 
 .rows { display: grid; gap: 14px; }
+
+.cancel {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  min-height: var(--tap);
+  color: var(--danger);
+  font-size: 14px;
+  text-align: center;
+}
+
+.cancelConfirmRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cancelConfirm {
+  flex: 1;
+  min-height: var(--tap);
+  font-weight: 600;
+  color: #fff;
+  background: var(--danger);
+  border-radius: 10px;
+}
+
+.cancelBack {
+  flex: 1;
+  min-height: var(--tap);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}

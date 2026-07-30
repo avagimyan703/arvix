@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  startWorkout, setWeight, closeSet, clearSet, toggleAthletic, finishWorkout,
+  startWorkout, setWeight, closeSet, clearSet, toggleAthletic, finishWorkout, cancelWorkout,
 } from './workout.js'
 
 const empty = { version: 1, lastSession: {}, current: null }
@@ -103,5 +103,28 @@ describe('finishWorkout', () => {
 
   it('без начатой тренировки ничего не делает', () => {
     expect(finishWorkout(empty, '2026-07-30')).toEqual(empty)
+  })
+})
+
+describe('cancelWorkout', () => {
+  it('очищает current, не трогая историю и последние результаты', () => {
+    const withHistory = {
+      ...empty,
+      lastSession: { 'bench-press': { weight: 60, reps: [8, 8, 8], date: '2026-07-23' } },
+      history: [{ date: '2026-07-23', dayId: 'tue', exercises: {}, athletic: [] }],
+    }
+    let s = startWorkout(withHistory, 'thu', 'now')
+    s = closeSet(s, 'back-squat', 0, 3, 8)
+    s = setWeight(s, 'back-squat', 100)
+
+    const cancelled = cancelWorkout(s)
+
+    expect(cancelled.current).toBeNull()
+    expect(cancelled.lastSession).toEqual(withHistory.lastSession)
+    expect(cancelled.history).toEqual(withHistory.history)
+  })
+
+  it('без начатой тренировки ничего не делает', () => {
+    expect(cancelWorkout(empty)).toEqual(empty)
   })
 })

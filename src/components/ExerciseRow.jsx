@@ -1,6 +1,6 @@
 import SetTracker from './SetTracker.jsx'
 import { formatTime } from '../lib/timer.js'
-import { formatWeight } from '../lib/format.js'
+import { formatWeight, stepWeight } from '../lib/format.js'
 import styles from './ExerciseRow.module.css'
 
 export default function ExerciseRow({
@@ -24,16 +24,32 @@ export default function ExerciseRow({
 
       <div className={styles.weight}>
         <label className={styles.weightLabel} htmlFor={`w-${exerciseId}`}>Вес, кг</label>
-        <input
-          id={`w-${exerciseId}`}
-          className={styles.weightInput}
-          type="number"
-          inputMode="decimal"
-          step="0.5"
-          value={weight ?? ''}
-          placeholder="—"
-          onChange={(e) => onWeight(e.target.value === '' ? null : Number(e.target.value))}
-        />
+
+        <div className={styles.weightControl}>
+          <button
+            className={styles.stepBtn}
+            onClick={() => onWeight(stepWeight(weight, lastSession?.weight ?? null, exercise.weightStep, -1))}
+            aria-label="Меньше веса"
+          >−</button>
+
+          <input
+            id={`w-${exerciseId}`}
+            className={styles.weightInput}
+            type="number"
+            inputMode="decimal"
+            step="0.5"
+            value={weight ?? ''}
+            placeholder="—"
+            onChange={(e) => onWeight(e.target.value === '' ? null : Number(e.target.value))}
+          />
+
+          <button
+            className={styles.stepBtn}
+            onClick={() => onWeight(stepWeight(weight, lastSession?.weight ?? null, exercise.weightStep, 1))}
+            aria-label="Больше веса"
+          >+</button>
+        </div>
+
         {lastSession?.weight != null && (
           <span className={styles.hint}>в прошлый раз: {formatWeight(lastSession.weight)} кг</span>
         )}

@@ -65,3 +65,10 @@ export function finishWorkout(state, date) {
     history: appendSession(state.history ?? [], state.current, date),
   }
 }
+
+// Отличается от finishWorkout тем, что ничего не пишет ни в lastSession,
+// ни в history: незавершённую тренировку не считаем состоявшейся.
+export function cancelWorkout(state) {
+  if (!state.current) return state
+  return { ...state, current: null }
+}
