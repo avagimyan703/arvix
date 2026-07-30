@@ -22,6 +22,10 @@ describe('parseHash', () => {
     expect(parseHash('#/reels/back')).toEqual({ screen: 'reelCategory', categoryId: 'back' })
   })
 
+  it('дневник', () => {
+    expect(parseHash('#/history')).toEqual({ screen: 'history' })
+  })
+
   it('мусор скатывается к списку дней', () => {
     expect(parseHash('#/чтототакое')).toEqual({ screen: 'days' })
     expect(parseHash('#/day')).toEqual({ screen: 'days' })
@@ -40,10 +44,11 @@ describe('hashFor', () => {
     expect(hashFor({ screen: 'exercise', exerciseId: 'pull-up' })).toBe('#/ex/pull-up')
     expect(hashFor({ screen: 'reels' })).toBe('#/reels')
     expect(hashFor({ screen: 'reelCategory', categoryId: 'back' })).toBe('#/reels/back')
+    expect(hashFor({ screen: 'history' })).toBe('#/history')
   })
 
   it('парсинг и сборка обратимы', () => {
-    for (const h of ['#/', '#/day/sun', '#/ex/leg-press', '#/reels', '#/reels/chest']) {
+    for (const h of ['#/', '#/day/sun', '#/ex/leg-press', '#/reels', '#/reels/chest', '#/history']) {
       expect(hashFor(parseHash(h))).toBe(h)
     }
   })

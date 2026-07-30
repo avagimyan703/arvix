@@ -1,3 +1,5 @@
+import { appendSession } from './history.js'
+
 export function startWorkout(state, dayId, startedAt) {
   return {
     ...state,
@@ -56,5 +58,10 @@ export function finishWorkout(state, date) {
     }
   }
 
-  return { version: 1, lastSession, current: null }
+  return {
+    version: 1,
+    lastSession,
+    current: null,
+    history: appendSession(state.history ?? [], state.current, date),
+  }
 }

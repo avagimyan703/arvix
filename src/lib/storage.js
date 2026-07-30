@@ -1,9 +1,9 @@
 const KEY = 'arvix.v1'
 
-export const EMPTY_STATE = { version: 1, lastSession: {}, current: null }
+export const EMPTY_STATE = { version: 1, lastSession: {}, current: null, history: [] }
 
 function empty() {
-  return { version: 1, lastSession: {}, current: null }
+  return { version: 1, lastSession: {}, current: null, history: [] }
 }
 
 export function loadState() {
@@ -16,6 +16,9 @@ export function loadState() {
       version: 1,
       lastSession: parsed.lastSession ?? {},
       current: parsed.current ?? null,
+      // history появилась позже lastSession, поэтому версия схемы не менялась:
+      // у старых записей поля просто нет, и оно добирается пустым списком.
+      history: Array.isArray(parsed.history) ? parsed.history : [],
     }
   } catch {
     return empty()

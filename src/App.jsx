@@ -10,6 +10,7 @@ import WorkoutScreen from './components/WorkoutScreen.jsx'
 import ExerciseDetail from './components/ExerciseDetail.jsx'
 import ReelCatalog from './components/ReelCatalog.jsx'
 import ReelCategory from './components/ReelCategory.jsx'
+import HistoryScreen from './components/HistoryScreen.jsx'
 
 export default function App() {
   const [route, setRoute] = useState(() => parseHash(window.location.hash))
@@ -71,6 +72,17 @@ export default function App() {
     )
   }
 
+  if (route.screen === 'history') {
+    return (
+      <HistoryScreen
+        history={w.state.history}
+        program={program}
+        exercises={exercises}
+        onBack={() => navigate({ screen: 'days' })}
+      />
+    )
+  }
+
   if (route.screen === 'reels') {
     return (
       <ReelCatalog
@@ -87,6 +99,9 @@ export default function App() {
       todayId={todayDayId(new Date())}
       onPick={(dayId) => navigate({ screen: 'workout', dayId })}
       onOpenReels={() => navigate({ screen: 'reels' })}
+      onOpenHistory={() => navigate({ screen: 'history' })}
+      historyCount={w.state.history.length}
+      currentDayId={w.state.current?.dayId ?? null}
     />
   )
 }

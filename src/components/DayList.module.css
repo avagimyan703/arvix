@@ -102,3 +102,9 @@
   background: var(--accent);
   border-radius: 999px;
 }
+
+/* Незавершённая тренировка — другой цвет, чтобы не путать с «сегодня» */
+.badgeLive {
+  color: #fff;
+  background: #c2410c;
+}

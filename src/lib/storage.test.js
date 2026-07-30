@@ -7,7 +7,7 @@ describe('storage', () => {
   beforeEach(() => localStorage.clear())
 
   it('на пустом хранилище отдаёт пустое состояние', () => {
-    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null })
+    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null, history: [] })
   })
 
   it('сохранённое состояние читается обратно', () => {
@@ -15,6 +15,7 @@ describe('storage', () => {
       version: 1,
       lastSession: { 'back-squat': { weight: 80, reps: [8, 8, 8], date: '2026-07-21' } },
       current: null,
+      history: [],
     }
     saveState(state)
     expect(loadState()).toEqual(state)
@@ -23,7 +24,7 @@ describe('storage', () => {
   it('битый JSON не роняет приложение', () => {
     localStorage.setItem(KEY, '{это не json')
     expect(() => loadState()).not.toThrow()
-    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null })
+    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null, history: [] })
   })
 
   it('чужая версия схемы игнорируется', () => {
@@ -33,11 +34,11 @@ describe('storage', () => {
 
   it('недостающие поля добираются умолчаниями', () => {
     localStorage.setItem(KEY, JSON.stringify({ version: 1 }))
-    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null })
+    expect(loadState()).toEqual({ version: 1, lastSession: {}, current: null, history: [] })
   })
 
   it('clearState стирает запись', () => {
-    saveState({ version: 1, lastSession: { a: 1 }, current: null })
+    saveState({ version: 1, lastSession: { a: 1 }, current: null, history: [] })
     clearState()
     expect(loadState().lastSession).toEqual({})
   })
