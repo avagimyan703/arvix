@@ -54,12 +54,11 @@ export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
 
           {online && embed ? (
             <div className={styles.embedWrap}>
-              {/* Подсказка лежит ПОД плеером. Если Инстаграм отрисуется — он
-                  её закроет своим фоном. Если нет, увидишь текст, а не пустую
-                  дыру: у cross-origin iframe провал отрисовки не отловить. */}
+              {/* Подсказка лежит ПОД плеером и видна только если тот не
+                  отрисовался: у cross-origin iframe провал загрузки не
+                  отловить, а пустой прямоугольник читался бы как поломка. */}
               <p className={styles.embedFallbackHint}>
-                Если плеер не появился, Instagram не даёт встроить этот рилс —
-                открой его по ссылке ниже.
+                Плеер не загрузился — открой по ссылке ниже.
               </p>
               <iframe
                 className={styles.embed}
