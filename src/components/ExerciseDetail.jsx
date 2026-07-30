@@ -14,14 +14,52 @@ export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
   const online = useOnline()
   const embed = exercise.video ? embedUrl(exercise.video.url) : null
 
+  // Видео вытесняет гифку, но только когда его реально можно показать.
+  // Без сети плеер отрисовался бы пустым прямоугольником, поэтому в зале
+  // без связи на его месте снова гифка — она лежит в офлайн-кеше.
+  const showVideo = Boolean(embed) && online
+
   return (
     <div className={styles.screen}>
       <button className={styles.back} onClick={onBack}>← Назад</button>
 
-      <ExerciseGif id={exerciseId} name={exercise.name} size="detail" />
+      {showVideo ? (
+        <div className={styles.embedWrap}>
+          {/* Подсказка лежит ПОД плеером и видна только если тот не
+              отрисовался: у cross-origin iframe провал загрузки не
+              отловить, а пустой прямоугольник читался бы как поломка. */}
+          <p className={styles.embedFallbackHint}>
+            Плеер не загрузился — открой по ссылке ниже.
+          </p>
+          <iframe
+            className={styles.embed}
+            src={embed}
+            title={`${exercise.name} — видео-разбор, ${exercise.video.author}`}
+            loading="lazy"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
+        </div>
+      ) : (
+        <ExerciseGif id={exerciseId} name={exercise.name} size="detail" />
+      )}
 
       <h1 className={styles.title}>{exercise.name}</h1>
       <p className={styles.equipment}>{exercise.equipment}</p>
+
+      {exercise.video && (
+        <p className={styles.videoNote}>
+          {exercise.video.note} ·{' '}
+          <a
+            className={styles.videoAuthor}
+            href={exercise.video.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {exercise.video.author} ↗
+          </a>
+        </p>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.heading}>Как делать</h2>
@@ -46,47 +84,6 @@ export default function ExerciseDetail({ exercise, exerciseId, onBack }) {
       </section>
 
       <p className={styles.tip}>{exercise.tip}</p>
-
-      {exercise.video && (
-        <section className={styles.videoSection}>
-          <h2 className={styles.heading}>Видео-разбор</h2>
-          <p className={styles.videoNote}>{exercise.video.note}</p>
-
-          {online && embed ? (
-            <div className={styles.embedWrap}>
-              {/* Подсказка лежит ПОД плеером и видна только если тот не
-                  отрисовался: у cross-origin iframe провал загрузки не
-                  отловить, а пустой прямоугольник читался бы как поломка. */}
-              <p className={styles.embedFallbackHint}>
-                Плеер не загрузился — открой по ссылке ниже.
-              </p>
-              <iframe
-                className={styles.embed}
-                src={embed}
-                title={`${exercise.name} — видео-разбор, ${exercise.video.author}`}
-                loading="lazy"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            // Пустой прямоугольник вместо плеера выглядел бы как поломка,
-            // поэтому без сети честно говорим, чего не хватает.
-            <p className={styles.videoOffline}>
-              Нет сети — видео появится, когда связь вернётся. Техника выше работает офлайн.
-            </p>
-          )}
-
-          <a
-            className={styles.videoFallback}
-            href={exercise.video.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Открыть в Instagram ↗ · {exercise.video.author}
-          </a>
-        </section>
-      )}
     </div>
   )
 }
