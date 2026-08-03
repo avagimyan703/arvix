@@ -7,11 +7,18 @@
  * без истории невыполним. Отсюда этот модуль.
  */
 
-// Сколько тренировок держим. Три в неделю — это примерно год с запасом.
-// Ограничение нужно, чтобы localStorage не разрастался без предела.
-export const HISTORY_LIMIT = 200
+// Сколько тренировок держим. При графике 3×/нед 1000 — это больше шести
+// лет: со старым лимитом в 200 история обрезалась бы уже на 16-м месяце,
+// молча вытесняя самые ранние тренировки. Одна запись — около 0,5 КБ,
+// 1000 записей — не больше полумегабайта, это далеко не предел квоты
+// localStorage (обычно 5–10 МБ).
+export const HISTORY_LIMIT = 1000
 
-export function appendSession(history, current, date) {
+/**
+ * finishedAt и note — необязательные: старые вызовы (и тесты) без них
+ * по-прежнему работают, оба поля просто не попадают в запись.
+ */
+export function appendSession(history, current, date, finishedAt = null, note = null) {
   if (!current) return history
 
   const exercises = {}
@@ -24,11 +31,23 @@ export function appendSession(history, current, date) {
     date,
     dayId: current.dayId,
     startedAt: current.startedAt,
+    finishedAt,
+    note: note?.trim() || null,
     exercises,
     athletic: Object.keys(current.athletic ?? {}),
   }
 
   return [session, ...history].slice(0, HISTORY_LIMIT)
+}
+
+/**
+ * Длительность тренировки в минутах — для журнала и итогового экрана.
+ * null, если не знаем время окончания (старые записи до этой функции).
+ */
+export function sessionDuration(session) {
+  if (!session.startedAt || !session.finishedAt) return null
+  const ms = new Date(session.finishedAt) - new Date(session.startedAt)
+  return Math.max(1, Math.round(ms / 60000))
 }
 
 /**
@@ -50,6 +69,27 @@ export function weekVolume(history, exercises, fromDate, toDate) {
 }
 
 /**
+ * Последние сессии, где встречается конкретное упражнение — короткая справка
+ * «как это шло в последний раз» на экране техники. history уже отсортирована
+ * от новых к старым, поэтому просто фильтруем и берём первые limit.
+ *
+ * @param {Array} history
+ * @param {string} exerciseId
+ * @param {number} limit
+ * @returns {Array<{date: string, weight: number|null, reps: Array<number|null>}>}
+ */
+export function exerciseHistory(history, exerciseId, limit = 5) {
+  const rows = []
+  for (const session of history) {
+    const done = session.exercises[exerciseId]
+    if (!done) continue
+    rows.push({ date: session.date, weight: done.weight, reps: done.reps })
+    if (rows.length >= limit) break
+  }
+  return rows
+}
+
+/**
  * Дневник простым текстом — чтобы скопировать и отправить на разбор.
  * Формат рассчитан на чтение человеком и моделью, без разметки.
  */
@@ -64,7 +104,9 @@ export function exportText(history, program, exercises) {
   const lines = ['ДНЕВНИК ТРЕНИРОВОК', '']
 
   for (const s of history) {
-    lines.push(`${s.date} · ${dayName(s.dayId)}`)
+    const duration = sessionDuration(s)
+    const durationPart = duration != null ? ` · ${duration} мин` : ''
+    lines.push(`${s.date} · ${dayName(s.dayId)}${durationPart}`)
     for (const [id, done] of Object.entries(s.exercises)) {
       const name = exercises[id]?.name ?? id
       const weight = done.weight != null ? `${String(done.weight).replace('.', ',')} кг` : 'без веса'
@@ -75,6 +117,7 @@ export function exportText(history, program, exercises) {
       const names = s.athletic.map((id) => exercises[id]?.name ?? id)
       lines.push(`  Финишер: ${names.join(', ')}`)
     }
+    if (s.note) lines.push(`  Заметка: ${s.note}`)
     lines.push('')
   }
 

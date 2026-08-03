@@ -1,5 +1,8 @@
 import { countByCategory } from '../lib/reels.js'
+import { pluralRu } from '../lib/format.js'
 import styles from './ReelCatalog.module.css'
+
+const REEL_FORMS = ['рилс', 'рилса', 'рилсов']
 
 export default function ReelCatalog({ library, onPick, onBack }) {
   const counts = countByCategory(library)
@@ -10,7 +13,7 @@ export default function ReelCatalog({ library, onPick, onBack }) {
       <button className={styles.back} onClick={onBack}>← Дни</button>
       <h1 className={styles.title}>Каталог рилсов</h1>
       <p className={styles.subtitle}>
-        {total === 0 ? 'Пока пусто' : `${total} ${plural(total)} по категориям`}
+        {total === 0 ? 'Пока пусто' : `${total} ${pluralRu(total, REEL_FORMS)} по категориям`}
       </p>
 
       <ul className={styles.list}>
@@ -32,12 +35,4 @@ export default function ReelCatalog({ library, onPick, onBack }) {
       </ul>
     </div>
   )
-}
-
-function plural(n) {
-  const d = n % 10
-  const h = n % 100
-  if (d === 1 && h !== 11) return 'рилс'
-  if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'рилса'
-  return 'рилсов'
 }

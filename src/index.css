@@ -10,7 +10,34 @@
   --danger: #ef6b6b;
   --tap: 56px;
   --radius: 14px;
+  --radius-sm: 10px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+
+  /* Сетка отступов с шагом 4px — единственный источник значений margin/
+     padding/gap в проекте, чтобы всё выравнивалось на одну сетку. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+
+  /* Шкала типографики — именованные роли вместо произвольных px,
+     по образцу Apple HIG (Caption/Footnote/Body/Title). */
+  --text-caption: 12px;   /* заглавные эйбро-заголовки разделов, бейджи */
+  --text-footnote: 13px;  /* метаданные: счётчики, параметры, подписи */
+  --text-sm: 14px;        /* подзаголовки экранов, второстепенный текст */
+  --text-body: 15px;      /* абзацы: подсказки, техника, описания */
+  --text-md: 16px;        /* кнопка «назад», акцентные короткие лейблы */
+  --text-lg: 18px;        /* имя упражнения, ввод веса, цифры в кружках */
+  --text-title-sm: 17px;  /* лейблы основных кнопок (Начать/Завершить) */
+  --text-title: 20px;     /* заголовок карточки дня */
+  --text-title-lg: 26px;  /* заголовок экрана (везде, кроме главного) */
+  --text-display: 28px;   /* заголовок главного экрана — верх иерархии */
+  --text-numeral: 24px;   /* цифровые табло: таймер отдыха, степпер повторов */
+  --text-hero: 48px;      /* главная цифра итогового экрана после тренировки */
 }
 
 * { box-sizing: border-box; }
@@ -21,6 +48,7 @@ html, body, #root {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -37,4 +65,14 @@ button {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+/* Микроанимации приятны, пока их можно выключить: у кого укачивание или
+   вестибулярная чувствительность к движению, получают то же самое мгновенно. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

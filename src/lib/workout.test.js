@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   startWorkout, setWeight, closeSet, clearSet, toggleAthletic, finishWorkout, cancelWorkout,
+  isBlockDone, sessionProgress,
 } from './workout.js'
 
 const empty = { version: 1, lastSession: {}, current: null }
@@ -27,6 +28,30 @@ describe('startWorkout', () => {
   it('не трогает прошлые сессии', () => {
     const withHistory = { ...empty, lastSession: { 'back-squat': { weight: 80, reps: [8], date: 'x' } } }
     expect(startWorkout(withHistory, 'thu', 'now').lastSession).toEqual(withHistory.lastSession)
+  })
+
+  it('заранее заполняет вес известными прошлыми результатами', () => {
+    const withHistory = {
+      ...empty,
+      lastSession: {
+        'back-squat': { weight: 100, reps: [8, 8, 7], date: 'x' },
+        'leg-press': { weight: 120, reps: [10, 10], date: 'x' },
+      },
+    }
+    const s = startWorkout(withHistory, 'thu', 'now', ['back-squat', 'leg-press', 'lateral-raise'])
+    expect(s.current.weights).toEqual({ 'back-squat': 100, 'leg-press': 120 })
+  })
+
+  it('упражнение без прошлого результата остаётся незаполненным', () => {
+    const s = startWorkout(empty, 'thu', 'now', ['back-squat'])
+    expect(s.current.weights).toEqual({})
+  })
+
+  it('повторный вызов для уже идущей тренировки того же дня не сбрасывает прогресс', () => {
+    let s = startWorkout(empty, 'thu', '2026-07-30T18:00:00.000Z')
+    s = closeSet(s, 'back-squat', 0, 3, 8)
+    const again = startWorkout(s, 'thu', '2026-07-30T18:05:00.000Z')
+    expect(again).toBe(s)
   })
 })
 
@@ -126,5 +151,46 @@ describe('cancelWorkout', () => {
 
   it('без начатой тренировки ничего не делает', () => {
     expect(cancelWorkout(empty)).toEqual(empty)
+  })
+})
+
+describe('isBlockDone', () => {
+  const block = { sets: 3 }
+
+  it('все подходы закрыты числами — true', () => {
+    expect(isBlockDone(block, [8, 8, 7])).toBe(true)
+  })
+
+  it('хотя бы один подход пуст — false', () => {
+    expect(isBlockDone(block, [8, null, 7])).toBe(false)
+  })
+
+  it('подходов ещё нет вовсе — false', () => {
+    expect(isBlockDone(block, undefined)).toBe(false)
+  })
+
+  it('число подходов не совпадает с планом — false', () => {
+    expect(isBlockDone(block, [8, 8])).toBe(false)
+  })
+})
+
+describe('sessionProgress', () => {
+  const blocks = [
+    { exercise: 'back-squat', sets: 3 },
+    { exercise: 'leg-press', sets: 2 },
+  ]
+
+  it('без тренировки — нули, но план виден', () => {
+    expect(sessionProgress(blocks, null)).toEqual({ doneSets: 0, totalSets: 5, doneCount: 0, totalCount: 2 })
+  })
+
+  it('считает частично сделанную тренировку', () => {
+    const current = { reps: { 'back-squat': [8, 8, null], 'leg-press': [12, 11] } }
+    expect(sessionProgress(blocks, current)).toEqual({ doneSets: 4, totalSets: 5, doneCount: 1, totalCount: 2 })
+  })
+
+  it('упражнение, к которому не притронулись, не в счёт', () => {
+    const current = { reps: { 'back-squat': [8, 8, 7] } }
+    expect(sessionProgress(blocks, current)).toEqual({ doneSets: 3, totalSets: 5, doneCount: 1, totalCount: 2 })
   })
 })

@@ -4,7 +4,6 @@ export function parseHash(hash) {
 
   const [head, param] = clean.split('/')
   if (head === 'day' && param) return { screen: 'workout', dayId: param }
-  if (head === 'ex' && param) return { screen: 'exercise', exerciseId: param }
   if (head === 'history') return { screen: 'history' }
   if (head === 'reels') {
     return param
@@ -16,7 +15,6 @@ export function parseHash(hash) {
 
 export function hashFor(route) {
   if (route.screen === 'workout') return `#/day/${route.dayId}`
-  if (route.screen === 'exercise') return `#/ex/${route.exerciseId}`
   if (route.screen === 'reelCategory') return `#/reels/${route.categoryId}`
   if (route.screen === 'reels') return '#/reels'
   if (route.screen === 'history') return '#/history'

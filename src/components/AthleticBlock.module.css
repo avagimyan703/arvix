@@ -1,49 +1,49 @@
 .block {
-  margin-top: 28px;
-  padding: 18px 16px;
+  margin-top: var(--space-7);
+  padding: var(--space-5) var(--space-4);
   background: var(--surface-2);
   border-radius: var(--radius);
 }
 
 .heading {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--text-caption);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent);
 }
 
 .note {
-  margin: 6px 0 16px;
-  font-size: 13px;
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: var(--text-footnote);
   color: var(--text-dim);
 }
 
-.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
 
 .card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .done { border-color: var(--accent); }
 
 .meta {
   display: grid;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
   padding: 0;
   text-align: left;
 }
 
-.name { font-size: 16px; font-weight: 600; }
+.name { font-size: var(--text-md); font-weight: 600; }
 
-.format { font-size: 13px; color: var(--text-dim); }
+.format { font-size: var(--text-footnote); color: var(--text-dim); }
 
 .check {
   width: var(--tap);
@@ -52,7 +52,7 @@
   flex: none;
   display: grid;
   place-items: center;
-  font-size: 22px;
+  font-size: var(--text-numeral);
   color: var(--accent-ink);
   background: var(--surface-2);
   border: 2px solid var(--line);

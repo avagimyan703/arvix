@@ -1,10 +1,19 @@
 import { useState } from 'react'
-import { exportText, weekVolume } from '../lib/history.js'
-import { formatWeight } from '../lib/format.js'
+import { exportText, weekVolume, sessionDuration } from '../lib/history.js'
+import { formatWeight, pluralRu } from '../lib/format.js'
 import styles from './HistoryScreen.module.css'
+
+const WORKOUT_FORMS = ['тренировка', 'тренировки', 'тренировок']
+
+// Сколько последних тренировок реально рисуем на экране. С годами дневник
+// растёт на тысячи записей — рендерить их все в DOM разом заметно тормозит
+// прокрутку на слабых телефонах. Экспорт (кнопка ниже) при этом берёт всю
+// историю целиком, лимит касается только того, что видно на этом экране.
+const VISIBLE_LIMIT = 60
 
 export default function HistoryScreen({ history, program, exercises, onBack }) {
   const [copied, setCopied] = useState(false)
+  const visible = history.slice(0, VISIBLE_LIMIT)
 
   const dayLabel = (dayId) => {
     const d = program.days.find((x) => x.id === dayId)
@@ -45,7 +54,7 @@ export default function HistoryScreen({ history, program, exercises, onBack }) {
       <button className={styles.back} onClick={onBack}>← Дни</button>
       <h1 className={styles.title}>Дневник</h1>
       <p className={styles.subtitle}>
-        {history.length === 0 ? 'Пока пусто' : `${history.length} ${plural(history.length)}`}
+        {history.length === 0 ? 'Пока пусто' : `${history.length} ${pluralRu(history.length, WORKOUT_FORMS)}`}
       </p>
 
       {history.length > 0 && (
@@ -70,41 +79,45 @@ export default function HistoryScreen({ history, program, exercises, onBack }) {
           )}
 
           <ul className={styles.list}>
-            {history.map((s, i) => (
-              <li key={`${s.date}-${i}`} className={styles.session}>
-                <div className={styles.sessionHead}>
-                  <span className={styles.date}>{s.date}</span>
-                  <span className={styles.day}>{dayLabel(s.dayId)}</span>
-                </div>
-                <ul className={styles.exercises}>
-                  {Object.entries(s.exercises).map(([id, done]) => (
-                    <li key={id} className={styles.exercise}>
-                      <span className={styles.exName}>{exercises[id]?.name ?? id}</span>
-                      <span className={styles.exData}>
-                        {done.weight != null ? `${formatWeight(done.weight)} кг · ` : ''}
-                        {done.reps.map((r) => (r == null ? '—' : r)).join(', ')}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                {s.athletic.length > 0 && (
-                  <p className={styles.athletic}>
-                    Финишер: {s.athletic.map((id) => exercises[id]?.name ?? id).join(', ')}
-                  </p>
-                )}
-              </li>
-            ))}
+            {visible.map((s, i) => {
+              const duration = sessionDuration(s)
+              return (
+                <li key={`${s.date}-${i}`} className={styles.session}>
+                  <div className={styles.sessionHead}>
+                    <span className={styles.date}>{s.date}</span>
+                    <span className={styles.day}>
+                      {dayLabel(s.dayId)}{duration != null && ` · ${duration} мин`}
+                    </span>
+                  </div>
+                  <ul className={styles.exercises}>
+                    {Object.entries(s.exercises).map(([id, done]) => (
+                      <li key={id} className={styles.exercise}>
+                        <span className={styles.exName}>{exercises[id]?.name ?? id}</span>
+                        <span className={styles.exData}>
+                          {done.weight != null ? `${formatWeight(done.weight)} кг · ` : ''}
+                          {done.reps.map((r) => (r == null ? '—' : r)).join(', ')}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {s.athletic.length > 0 && (
+                    <p className={styles.athletic}>
+                      Финишер: {s.athletic.map((id) => exercises[id]?.name ?? id).join(', ')}
+                    </p>
+                  )}
+                  {s.note && <p className={styles.sessionNote}>«{s.note}»</p>}
+                </li>
+              )
+            })}
           </ul>
+
+          {history.length > VISIBLE_LIMIT && (
+            <p className={styles.moreHint}>
+              Показаны последние {VISIBLE_LIMIT} — вся история целиком есть в «Скопировать для разбора» выше.
+            </p>
+          )}
         </>
       )}
     </div>
   )
-}
-
-function plural(n) {
-  const d = n % 10
-  const h = n % 100
-  if (d === 1 && h !== 11) return 'тренировка'
-  if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'тренировки'
-  return 'тренировок'
 }

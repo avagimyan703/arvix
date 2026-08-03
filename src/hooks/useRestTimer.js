@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { createTimer, startTimer, pauseTimer, remaining, isDone } from '../lib/timer.js'
+import { createTimer, startTimer, pauseTimer, remaining, isDone, extendTimer } from '../lib/timer.js'
 
 export function useRestTimer() {
   const [timer, setTimer] = useState(null)
@@ -39,6 +39,15 @@ export function useRestTimer() {
     navigator.vibrate?.([200, 100, 200])
   }, [done, timer])
 
+  // Панель сама прячется через паузу после «Отдых окончен» — иначе тап по ✕
+  // на закрытие таймера становится обязательным действием на каждый подход,
+  // хотя пользователь уже увидел и почувствовал (вибрацией), что пора дальше.
+  useEffect(() => {
+    if (!done) return
+    const id = setTimeout(() => setTimer(null), 5000)
+    return () => clearTimeout(id)
+  }, [done, timer?.endsAt])
+
   const startRest = useCallback((seconds) => {
     const t = Date.now()
     setNow(t)
@@ -59,6 +68,14 @@ export function useRestTimer() {
 
   const dismissRest = useCallback(() => setTimer(null), [])
 
+  // Продлевает текущий отдых, не трогая паузу/запуск. Работает и когда
+  // отдых уже «закончился» (timer.done) — оживляет его на N секунд вперёд.
+  const extendRest = useCallback((seconds) => {
+    const t = Date.now()
+    setNow(t)
+    setTimer((prev) => (prev ? extendTimer(prev, seconds) : prev))
+  }, [])
+
   return {
     // Компоненту отдаём готовые числа, чтобы он не знал про метки времени.
     timer: timer ? { total: timer.total, remaining: left, running: timer.running, done } : null,
@@ -66,5 +83,6 @@ export function useRestTimer() {
     pauseRest,
     resumeRest,
     dismissRest,
+    extendRest,
   }
 }

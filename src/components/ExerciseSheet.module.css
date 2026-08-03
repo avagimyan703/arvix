@@ -1,0 +1,41 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  animation: scrimIn 0.2s ease;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  border-radius: 20px 20px 0 0;
+  animation: sheetIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Прокрутка остаётся рабочей, сама полоса — нет. На телефоне её и так
+     не видно; след от неё — только на десктопе, где мы это и отлаживаем. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sheet::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes scrimIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

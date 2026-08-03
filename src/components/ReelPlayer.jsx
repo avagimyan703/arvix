@@ -51,9 +51,17 @@ export default function ReelPlayer({ reel, title }) {
         className={state === 'ready' ? styles.frame : `${styles.frame} ${styles.hidden}`}
         src={src}
         title={title}
+        loading="lazy"
         onLoad={handleLoad}
         allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
         allowFullScreen
+        // Страница Инстаграма держит overflow-y: scroll и без прокрутки —
+        // на Mac с мышью системные скроллбары видны всегда, и это давало
+        // белую полосу вдоль правого края поверх видео. Кросс-доменно свой
+        // CSS внутрь фрейма не пробросить, но scrolling="no" — атрибут
+        // самого iframe, а не его содержимого, и отключает полосу на уровне
+        // браузера независимо от источника.
+        scrolling="no"
       />
     </div>
   )

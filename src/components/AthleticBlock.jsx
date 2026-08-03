@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import styles from './AthleticBlock.module.css'
 
-export default function AthleticBlock({ items, exercises, done, onToggle, onOpen }) {
+function AthleticBlock({ items, exercises, done, onToggle, onOpen }) {
   return (
     <section className={styles.block}>
       <h2 className={styles.heading}>Атлетический финишер</h2>
@@ -35,3 +36,5 @@ export default function AthleticBlock({ items, exercises, done, onToggle, onOpen
     </section>
   )
 }
+
+export default memo(AthleticBlock)

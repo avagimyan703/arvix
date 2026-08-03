@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { parseHash, subscribeRoute, navigate } from './lib/router.js'
-import { todayDayId, findDay } from './lib/program.js'
+import { findDay } from './lib/program.js'
 import { useWorkout } from './hooks/useWorkout.js'
 import program from './data/program.json'
 import exercises from './data/exercises.json'
 import reelLibrary from './data/reels.json'
 import DayList from './components/DayList.jsx'
 import WorkoutScreen from './components/WorkoutScreen.jsx'
-import ExerciseDetail from './components/ExerciseDetail.jsx'
 import ReelCatalog from './components/ReelCatalog.jsx'
 import ReelCategory from './components/ReelCategory.jsx'
 import HistoryScreen from './components/HistoryScreen.jsx'
@@ -17,6 +16,19 @@ export default function App() {
   const w = useWorkout()
 
   useEffect(() => subscribeRoute(setRoute), [])
+
+  // Стабильные по ссылке — без этого мемоизация ExerciseRow/AthleticBlock
+  // ниже по дереву была бы бессмысленной: каждый ререндер App пересоздавал
+  // бы эти функции и «пробивал» memo() у всех детей разом.
+  const goToDays = useCallback(() => navigate({ screen: 'days' }), [])
+  const finishWorkout = useCallback((note) => {
+    w.finishWorkout(note)
+    navigate({ screen: 'days' })
+  }, [w.finishWorkout])
+  const cancelWorkout = useCallback(() => {
+    w.cancelWorkout()
+    navigate({ screen: 'days' })
+  }, [w.cancelWorkout])
 
   if (route.screen === 'workout') {
     const day = findDay(program, route.dayId)
@@ -28,32 +40,16 @@ export default function App() {
       <WorkoutScreen
         day={day}
         exercises={exercises}
+        library={reelLibrary}
         state={w.state}
         onStart={w.startWorkout}
         onWeight={w.setWeight}
         onCloseSet={w.closeSet}
         onClearSet={w.clearSet}
         onToggleAthletic={w.toggleAthletic}
-        onFinish={() => { w.finishWorkout(); navigate({ screen: 'days' }) }}
-        onCancel={() => { w.cancelWorkout(); navigate({ screen: 'days' }) }}
-        onOpen={(exerciseId) => navigate({ screen: 'exercise', exerciseId })}
-        onBack={() => navigate({ screen: 'days' })}
-      />
-    )
-  }
-
-  if (route.screen === 'exercise') {
-    const exercise = exercises[route.exerciseId]
-    if (!exercise) {
-      navigate({ screen: 'days' })
-      return null
-    }
-    return (
-      <ExerciseDetail
-        exercise={exercise}
-        exerciseId={route.exerciseId}
-        library={reelLibrary}
-        onBack={() => window.history.back()}
+        onFinish={finishWorkout}
+        onCancel={cancelWorkout}
+        onBack={goToDays}
       />
     )
   }
@@ -79,7 +75,7 @@ export default function App() {
         history={w.state.history}
         program={program}
         exercises={exercises}
-        onBack={() => navigate({ screen: 'days' })}
+        onBack={goToDays}
       />
     )
   }
@@ -89,7 +85,7 @@ export default function App() {
       <ReelCatalog
         library={reelLibrary}
         onPick={(categoryId) => navigate({ screen: 'reelCategory', categoryId })}
-        onBack={() => navigate({ screen: 'days' })}
+        onBack={goToDays}
       />
     )
   }
@@ -97,12 +93,12 @@ export default function App() {
   return (
     <DayList
       program={program}
-      todayId={todayDayId(new Date())}
+      today={new Date()}
+      current={w.state.current}
+      history={w.state.history}
       onPick={(dayId) => navigate({ screen: 'workout', dayId })}
       onOpenReels={() => navigate({ screen: 'reels' })}
       onOpenHistory={() => navigate({ screen: 'history' })}
-      historyCount={w.state.history.length}
-      currentDayId={w.state.current?.dayId ?? null}
     />
   )
 }

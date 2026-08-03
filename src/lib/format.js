@@ -35,3 +35,20 @@ export function stepWeight(current, fallback, step, direction) {
 function round1(n) {
   return Math.round(n * 10) / 10
 }
+
+/**
+ * Русское склонение существительного по числу: «1 тренировка»,
+ * «2 тренировки», «5 тренировок». Один и тот же алгоритм нужен в трёх
+ * разных местах интерфейса — вынесен сюда, а не скопирован ещё раз.
+ *
+ * @param {number} n
+ * @param {[string, string, string]} forms — [для 1, для 2–4, для остальных]
+ * @returns {string}
+ */
+export function pluralRu(n, [one, few, many]) {
+  const d = n % 10
+  const h = n % 100
+  if (d === 1 && h !== 11) return one
+  if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return few
+  return many
+}

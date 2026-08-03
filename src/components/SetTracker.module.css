@@ -1,13 +1,13 @@
-.wrap { display: grid; gap: 10px; }
+.wrap { display: grid; gap: var(--space-3); }
 
-.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 
 .circle {
   width: var(--tap);
   height: var(--tap);
   display: grid;
   place-items: center;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text-dim);
   background: var(--surface-2);
@@ -19,14 +19,24 @@
   color: var(--accent-ink);
   background: var(--accent);
   border-color: var(--accent);
+  animation: setDone 0.28s ease;
+}
+
+/* Играет один раз — ровно в момент, когда React реально меняет класс на
+   узле, а не на каждой перерисовке (уже отмеченный подход класс не теряет,
+   значит браузер и не трогает атрибут повторно). */
+@keyframes setDone {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.16); }
+  100% { transform: scale(1); }
 }
 
 .stepper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
+  gap: var(--space-3);
+  padding: var(--space-3);
   background: var(--surface-2);
   border-radius: var(--radius);
 }
@@ -34,39 +44,39 @@
 .stepBtn {
   width: var(--tap);
   height: var(--tap);
-  font-size: 26px;
+  font-size: var(--text-numeral);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .stepValue {
   min-width: 40px;
   text-align: center;
-  font-size: 22px;
+  font-size: var(--text-numeral);
   font-weight: 600;
 }
 
 .stepDone {
   min-height: var(--tap);
-  padding: 0 18px;
+  padding: 0 var(--space-5);
   color: var(--accent-ink);
   background: var(--accent);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
 }
 
 .stepClear {
   min-height: var(--tap);
-  padding: 0 14px;
+  padding: 0 var(--space-4);
   color: var(--text-dim);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .stepHint {
   width: 100%;
-  font-size: 13px;
+  font-size: var(--text-footnote);
   color: var(--text-dim);
 }

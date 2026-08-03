@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatWeight, stepWeight } from './format.js'
+import { formatWeight, stepWeight, pluralRu } from './format.js'
 
 describe('formatWeight', () => {
   it('дробную часть отделяет запятой', () => {
@@ -45,5 +45,30 @@ describe('stepWeight', () => {
     let w = 100
     for (let i = 0; i < 3; i++) w = stepWeight(w, null, 2.5, 1)
     expect(w).toBe(107.5)
+  })
+})
+
+describe('pluralRu', () => {
+  const forms = ['тренировка', 'тренировки', 'тренировок']
+
+  it('1, 21, 101 — единственное число', () => {
+    expect(pluralRu(1, forms)).toBe('тренировка')
+    expect(pluralRu(21, forms)).toBe('тренировка')
+    expect(pluralRu(101, forms)).toBe('тренировка')
+  })
+
+  it('2–4, 22–24 — форма для нескольких', () => {
+    expect(pluralRu(2, forms)).toBe('тренировки')
+    expect(pluralRu(4, forms)).toBe('тренировки')
+    expect(pluralRu(23, forms)).toBe('тренировки')
+  })
+
+  it('0, 5–20, 25 — форма для многих, включая исключение на 11–14', () => {
+    expect(pluralRu(0, forms)).toBe('тренировок')
+    expect(pluralRu(5, forms)).toBe('тренировок')
+    expect(pluralRu(11, forms)).toBe('тренировок')
+    expect(pluralRu(12, forms)).toBe('тренировок')
+    expect(pluralRu(14, forms)).toBe('тренировок')
+    expect(pluralRu(25, forms)).toBe('тренировок')
   })
 })

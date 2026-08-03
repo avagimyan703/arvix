@@ -4,10 +4,9 @@
   right: 0;
   bottom: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
   background: var(--surface-2);
   border-top: 1px solid var(--line);
   overflow: hidden;
@@ -24,30 +23,46 @@
   transition: transform 1s linear;
 }
 
-.label, .time, .action, .close { position: relative; }
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
 
-.label { font-size: 14px; color: var(--text-dim); }
+.label { font-size: var(--text-sm); color: var(--text-dim); }
 
 .time {
-  font-size: 26px;
+  margin-right: auto;
+  font-size: var(--text-numeral);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.action {
-  min-height: 44px;
-  margin-left: auto;
-  padding: 0 16px;
+/* --tap, как и остальные кнопки в приложении — та же логика, что и у
+   +30/Пауза ниже: точность тапа между подходами ниже, размер не экономим. */
+.close {
+  flex: none;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  color: var(--text-dim);
+  font-size: var(--text-md);
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Тот же --tap, что и везде: это самая частая точка тапа между подходами,
+   где точность руки ниже всего, и ей не место быть меньше остальных. */
+.action, .extend {
+  flex: 1;
+  min-height: var(--tap);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
-.close {
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--text-dim);
-  font-size: 18px;
-}
-
-.done .action { display: none; }
+.extend { color: var(--text-dim); }

@@ -1,25 +1,51 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { loadState, saveState } from '../lib/storage.js'
 import * as workout from '../lib/workout.js'
 
-// Хук — только проводка: все переходы делает lib/workout.js,
-// после каждого состояние уезжает в localStorage.
+// Полсекунды простоя перед записью — пять нажатий клавиш при вводе веса
+// («102,5») дают одну запись в localStorage вместо пяти подряд. Экран
+// обновляется мгновенно в любом случае — откладывается только запись на диск.
+const SAVE_DEBOUNCE_MS = 300
+
+// Хук — только проводка: все переходы делает lib/workout.js.
 export function useWorkout() {
   const [state, setState] = useState(loadState)
+  const stateRef = useRef(state)
+  const isFirstRender = useRef(true)
+
+  useEffect(() => { stateRef.current = state }, [state])
+
+  // Отложенная запись: отменяется и переставляется на каждое новое
+  // изменение, пока их не станет тихо на SAVE_DEBOUNCE_MS.
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return }
+    const id = setTimeout(() => saveState(state), SAVE_DEBOUNCE_MS)
+    return () => clearTimeout(id)
+  }, [state])
+
+  // Подстраховка: если вкладку свернули или закрыли раньше, чем сработала
+  // отложенная запись выше, — пишем актуальное состояние немедленно.
+  // Экономия на записи не должна стоить потерянного подхода.
+  useEffect(() => {
+    const flush = () => saveState(stateRef.current)
+    const onVisibility = () => { if (document.visibilityState === 'hidden') flush() }
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', flush)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', flush)
+    }
+  }, [])
 
   const apply = useCallback((fn) => {
-    setState((prev) => {
-      const next = fn(prev)
-      saveState(next)
-      return next
-    })
+    setState((prev) => fn(prev))
   }, [])
 
   return {
     state,
 
-    startWorkout: useCallback((dayId) => {
-      apply((s) => workout.startWorkout(s, dayId, new Date().toISOString()))
+    startWorkout: useCallback((dayId, exerciseIds) => {
+      apply((s) => workout.startWorkout(s, dayId, new Date().toISOString(), exerciseIds))
     }, [apply]),
 
     setWeight: useCallback((id, weight) => {
@@ -38,8 +64,9 @@ export function useWorkout() {
       apply((s) => workout.toggleAthletic(s, id))
     }, [apply]),
 
-    finishWorkout: useCallback(() => {
-      apply((s) => workout.finishWorkout(s, new Date().toISOString().slice(0, 10)))
+    finishWorkout: useCallback((note) => {
+      const now = new Date()
+      apply((s) => workout.finishWorkout(s, now.toISOString().slice(0, 10), now.toISOString(), note))
     }, [apply]),
 
     cancelWorkout: useCallback(() => {

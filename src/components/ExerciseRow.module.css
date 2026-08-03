@@ -1,61 +1,77 @@
 .row {
   display: grid;
-  gap: 14px;
-  padding: 16px;
+  gap: var(--space-4);
+  padding: var(--space-4);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  transition: border-color 0.15s ease;
 }
+
+/* Тот же язык, что и в AthleticBlock.done — рамка акцентом вместо
+   отдельной новой отметки, чтобы не плодить лишние визуальные сигналы. */
+.done { border-color: var(--accent); }
 
 .head {
   display: grid;
-  gap: 4px;
+  gap: var(--space-1);
   width: 100%;
   padding: 0;
   text-align: left;
 }
 
 .name {
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 600;
   line-height: 1.25;
 }
 
 .params {
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: var(--text-footnote);
   line-height: 1.4;
 }
 
-.weight { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.weight { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 
-.weightLabel { font-size: 14px; color: var(--text-dim); }
+.weightLabel { font-size: var(--text-sm); color: var(--text-dim); }
 
-.weightControl { display: flex; align-items: center; gap: 8px; }
+.weightControl { display: flex; align-items: center; gap: var(--space-2); }
 
 .stepBtn {
   width: var(--tap);
   height: var(--tap);
   flex: none;
-  font-size: 22px;
+  font-size: var(--text-numeral);
   color: var(--text);
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .weightInput {
   width: 80px;
   height: var(--tap);
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   font: inherit;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text);
   text-align: center;
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+  /* Свой шаг уже есть в виде кнопок «−»/«+» рядом — родной степпер поля
+     только дублирует его и вылезает поверх текста. */
+  -moz-appearance: textfield;
 }
 
-.hint { font-size: 13px; color: var(--text-dim); }
+.weightInput::-webkit-inner-spin-button,
+.weightInput::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.hint { font-size: var(--text-footnote); color: var(--text-dim); }
+
+.record { font-size: var(--text-footnote); font-weight: 600; color: var(--accent); }

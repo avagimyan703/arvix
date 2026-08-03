@@ -1,14 +1,41 @@
-import { useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import styles from './SetTracker.module.css'
 
-export default function SetTracker({ sets, reps, repRange, onClose, onEdit, onClear }) {
+const LONG_PRESS_MS = 450
+
+function SetTracker({ sets, reps, repRange, onClose, onEdit, onClear }) {
   const [editing, setEditing] = useState(null)
   const [min, max] = repRange
   const values = reps ?? Array(sets).fill(null)
 
+  // Долгое нажатие на пустой кружок делает то же, что тап-потом-тап
+  // (закрыть на максимуме, затем открыть правку), но одним жестом — когда
+  // повторы заведомо не совпадут с планом, не нужно тапать дважды подряд.
+  const pressTimeout = useRef(null)
+  const longPressedIndex = useRef(null)
+
+  function cancelPress() {
+    clearTimeout(pressTimeout.current)
+  }
+
+  function startPress(index) {
+    if (values[index] != null) return
+    longPressedIndex.current = null
+    pressTimeout.current = setTimeout(() => {
+      longPressedIndex.current = index
+      onClose(index, max)
+      setEditing(index)
+    }, LONG_PRESS_MS)
+  }
+
   // Тап по пустому кружку закрывает подход на верхней границе диапазона —
   // один тап в хорошем случае. Тап по закрытому открывает правку.
   function handleTap(index) {
+    cancelPress()
+    if (longPressedIndex.current === index) {
+      longPressedIndex.current = null
+      return
+    }
     if (values[index] == null) onClose(index, max)
     else setEditing(index)
   }
@@ -22,8 +49,12 @@ export default function SetTracker({ sets, reps, repRange, onClose, onEdit, onCl
           <button
             key={i}
             className={values[i] == null ? styles.circle : `${styles.circle} ${styles.done}`}
+            onPointerDown={() => startPress(i)}
+            onPointerUp={cancelPress}
+            onPointerLeave={cancelPress}
+            onPointerCancel={cancelPress}
             onClick={() => handleTap(i)}
-            aria-label={values[i] == null ? `Подход ${i + 1}, не сделан` : `Подход ${i + 1}, ${values[i]} повторений`}
+            aria-label={values[i] == null ? `Подход ${i + 1}, не сделан. Долгое нажатие — сразу править повторы` : `Подход ${i + 1}, ${values[i]} повторений`}
           >
             {values[i] ?? ''}
           </button>
@@ -59,3 +90,5 @@ export default function SetTracker({ sets, reps, repRange, onClose, onEdit, onCl
     </div>
   )
 }
+
+export default memo(SetTracker)

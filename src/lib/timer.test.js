@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createTimer, startTimer, pauseTimer, remaining, isDone, formatTime } from './timer.js'
+import { createTimer, startTimer, pauseTimer, remaining, isDone, formatTime, extendTimer } from './timer.js'
 
 // Время передаётся аргументом, а не берётся из Date.now() — иначе таймер
 // нельзя ни протестировать, ни починить: он обязан считать по метке времени,
@@ -65,6 +65,26 @@ describe('таймер', () => {
     let t = startTimer(createTimer(5), T0)
     t = pauseTimer(t, T0 + 10_000)
     expect(remaining(t, T0 + 10_000)).toBe(0)
+  })
+
+  it('продление запущенного таймера сдвигает метку окончания', () => {
+    const t = extendTimer(startTimer(createTimer(60), T0), 30)
+    expect(remaining(t, T0)).toBe(90)
+    expect(t.total).toBe(90)
+  })
+
+  it('продление таймера на паузе прибавляет к замороженному остатку', () => {
+    let t = startTimer(createTimer(60), T0)
+    t = pauseTimer(t, T0 + 40_000)
+    t = extendTimer(t, 30)
+    expect(remaining(t, T0 + 40_000)).toBe(50)
+    expect(t.running).toBe(false)
+  })
+
+  it('продление уже завершённого таймера возвращает его к отсчёту', () => {
+    const t = extendTimer(startTimer(createTimer(5), T0), 20)
+    expect(isDone(t, T0 + 5000)).toBe(false)
+    expect(remaining(t, T0 + 5000)).toBe(20)
   })
 
   it('форматирует время', () => {

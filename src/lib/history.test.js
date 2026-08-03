@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { appendSession, weekVolume, exportText, HISTORY_LIMIT } from './history.js'
+import {
+  appendSession, weekVolume, exportText, exerciseHistory, sessionDuration, HISTORY_LIMIT,
+} from './history.js'
 
 const program = {
   days: [
@@ -67,6 +69,39 @@ describe('appendSession', () => {
     const h = [{ date: '2026-07-28', dayId: 'thu', exercises: {}, athletic: [] }]
     expect(appendSession(h, null, '2026-07-30')).toBe(h)
   })
+
+  it('сохраняет время окончания и заметку, когда они переданы', () => {
+    const h = appendSession([], current, '2026-07-30', '2026-07-30T18:48:00.000Z', 'Тяжело шло')
+    expect(h[0].finishedAt).toBe('2026-07-30T18:48:00.000Z')
+    expect(h[0].note).toBe('Тяжело шло')
+  })
+
+  it('пустая или пробельная заметка сохраняется как null', () => {
+    const h = appendSession([], current, '2026-07-30', null, '   ')
+    expect(h[0].note).toBeNull()
+  })
+
+  it('без явной передачи — оба поля null, старое поведение не ломается', () => {
+    const h = appendSession([], current, '2026-07-30')
+    expect(h[0].finishedAt).toBeNull()
+    expect(h[0].note).toBeNull()
+  })
+})
+
+describe('sessionDuration', () => {
+  it('считает минуты между началом и концом', () => {
+    const s = { startedAt: '2026-07-30T18:00:00.000Z', finishedAt: '2026-07-30T18:48:30.000Z' }
+    expect(sessionDuration(s)).toBe(49)
+  })
+
+  it('без времени окончания — null', () => {
+    expect(sessionDuration({ startedAt: '2026-07-30T18:00:00.000Z', finishedAt: null })).toBeNull()
+  })
+
+  it('минимум одна минута, даже если разница меньше', () => {
+    const s = { startedAt: '2026-07-30T18:00:00.000Z', finishedAt: '2026-07-30T18:00:20.000Z' }
+    expect(sessionDuration(s)).toBe(1)
+  })
 })
 
 describe('weekVolume', () => {
@@ -84,6 +119,33 @@ describe('weekVolume', () => {
 
   it('на пустой истории отдаёт пустой объект', () => {
     expect(weekVolume([], exercises, '2026-07-27', '2026-08-02')).toEqual({})
+  })
+})
+
+describe('exerciseHistory', () => {
+  it('фильтрует по упражнению, самые новые первыми', () => {
+    let h = appendSession([], current, '2026-07-28')
+    h = appendSession(h, { ...current, weights: { 'back-squat': 105, 'leg-press': 185 } }, '2026-07-30')
+    const rows = exerciseHistory(h, 'back-squat')
+    expect(rows).toEqual([
+      { date: '2026-07-30', weight: 105, reps: [8, 8, 7] },
+      { date: '2026-07-28', weight: 100, reps: [8, 8, 7] },
+    ])
+  })
+
+  it('упражнения, которых не было в сессии, не попадают', () => {
+    const h = appendSession([], current, '2026-07-30')
+    expect(exerciseHistory(h, 'bench-press')).toEqual([])
+  })
+
+  it('уважает лимит', () => {
+    let h = []
+    for (let i = 0; i < 10; i++) h = appendSession(h, current, `2026-01-${String(i + 1).padStart(2, '0')}`)
+    expect(exerciseHistory(h, 'back-squat', 3)).toHaveLength(3)
+  })
+
+  it('на пустой истории — пустой список', () => {
+    expect(exerciseHistory([], 'back-squat')).toEqual([])
   })
 })
 

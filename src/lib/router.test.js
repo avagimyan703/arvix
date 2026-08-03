@@ -12,10 +12,6 @@ describe('parseHash', () => {
     expect(parseHash('#/day/thu')).toEqual({ screen: 'workout', dayId: 'thu' })
   })
 
-  it('упражнение', () => {
-    expect(parseHash('#/ex/back-squat')).toEqual({ screen: 'exercise', exerciseId: 'back-squat' })
-  })
-
   it('каталог рилсов и его категория', () => {
     expect(parseHash('#/reels')).toEqual({ screen: 'reels' })
     expect(parseHash('#/reels/')).toEqual({ screen: 'reels' })
@@ -26,10 +22,13 @@ describe('parseHash', () => {
     expect(parseHash('#/history')).toEqual({ screen: 'history' })
   })
 
-  it('мусор скатывается к списку дней', () => {
+  it('мусор и старые ссылки на технику упражнения скатываются к списку дней', () => {
+    // Техника упражнения больше не отдельный маршрут — она открывается
+    // шторкой поверх тренировки, а не по ссылке. Старые сохранённые
+    // #/ex/... просто попадают на список дней, а не роняют приложение.
     expect(parseHash('#/чтототакое')).toEqual({ screen: 'days' })
     expect(parseHash('#/day')).toEqual({ screen: 'days' })
-    expect(parseHash('#/ex/')).toEqual({ screen: 'days' })
+    expect(parseHash('#/ex/back-squat')).toEqual({ screen: 'days' })
   })
 
   it('undefined не роняет', () => {
@@ -41,14 +40,13 @@ describe('hashFor', () => {
   it('собирает хеш обратно', () => {
     expect(hashFor({ screen: 'days' })).toBe('#/')
     expect(hashFor({ screen: 'workout', dayId: 'tue' })).toBe('#/day/tue')
-    expect(hashFor({ screen: 'exercise', exerciseId: 'pull-up' })).toBe('#/ex/pull-up')
     expect(hashFor({ screen: 'reels' })).toBe('#/reels')
     expect(hashFor({ screen: 'reelCategory', categoryId: 'back' })).toBe('#/reels/back')
     expect(hashFor({ screen: 'history' })).toBe('#/history')
   })
 
   it('парсинг и сборка обратимы', () => {
-    for (const h of ['#/', '#/day/sun', '#/ex/leg-press', '#/reels', '#/reels/chest', '#/history']) {
+    for (const h of ['#/', '#/day/sun', '#/reels', '#/reels/chest', '#/history']) {
       expect(hashFor(parseHash(h))).toBe(h)
     }
   })
