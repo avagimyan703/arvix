@@ -1,9 +1,11 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
 import SetTracker from './SetTracker.jsx'
 import EquipmentIcon from './EquipmentIcon.jsx'
+import ExercisePreview from './ExercisePreview.jsx'
 import { formatTime } from '../lib/timer.js'
 import { formatWeight, stepWeight } from '../lib/format.js'
 import { equipmentIcon } from '../lib/equipment.js'
+import { muscleZone } from '../lib/muscleZone.js'
 import { useHoldStep } from '../hooks/useHoldStep.js'
 import styles from './ExerciseRow.module.css'
 
@@ -64,72 +66,89 @@ function ExerciseRow({
   // кружкам внутри, чтобы прогресс тренировки читался с одного взгляда.
   const allDone = reps != null && reps.length === block.sets && reps.every((r) => r != null)
   const icon = equipmentIcon(exercise.equipment)
+  const zone = muscleZone(exercise.primary)
 
   return (
     <article className={allDone ? `${styles.row} ${styles.done}` : styles.row}>
-      <button className={styles.head} onClick={handleOpen} aria-label={`Техника: ${exercise.name}`}>
-        {icon && (
-          <span className={styles.icon}>
-            <EquipmentIcon type={icon} />
+      <div className={styles.body}>
+        <button className={styles.head} onClick={handleOpen} aria-label={`Техника: ${exercise.name}`}>
+          {icon && (
+            <span className={styles.icon}>
+              <EquipmentIcon type={icon} />
+            </span>
+          )}
+          <span className={styles.headText}>
+            <span className={styles.name}>{exercise.name}</span>
+            <span className={styles.params}>{params}</span>
           </span>
-        )}
-        <span className={styles.headText}>
-          <span className={styles.name}>{exercise.name}</span>
-          <span className={styles.params}>{params}</span>
-        </span>
-      </button>
+        </button>
 
-      <div className={styles.weight}>
-        <label className={styles.weightLabel} htmlFor={`w-${exerciseId}`}>Вес, кг</label>
+        <div className={styles.weight}>
+          <label className={styles.weightLabel} htmlFor={`w-${exerciseId}`}>Вес, кг</label>
 
-        <div className={styles.weightControl}>
-          <button
-            className={styles.stepBtn}
-            {...decWeight}
-            aria-label="Меньше веса. Удержание — быстрее"
-          >−</button>
+          <div className={styles.weightControl}>
+            <button
+              className={styles.stepBtn}
+              {...decWeight}
+              aria-label="Меньше веса. Удержание — быстрее"
+            >−</button>
 
-          <input
-            id={`w-${exerciseId}`}
-            className={styles.weightInput}
-            type="number"
-            inputMode="decimal"
-            step="0.5"
-            value={weight ?? ''}
-            placeholder="—"
-            onChange={(e) => handleWeight(e.target.value === '' ? null : Number(e.target.value))}
-          />
+            <input
+              id={`w-${exerciseId}`}
+              className={styles.weightInput}
+              type="number"
+              inputMode="decimal"
+              step="0.5"
+              value={weight ?? ''}
+              placeholder="—"
+              onChange={(e) => handleWeight(e.target.value === '' ? null : Number(e.target.value))}
+            />
 
-          <button
-            className={styles.stepBtn}
-            {...incWeight}
-            aria-label="Больше веса. Удержание — быстрее"
-          >+</button>
+            <button
+              className={styles.stepBtn}
+              {...incWeight}
+              aria-label="Больше веса. Удержание — быстрее"
+            >+</button>
+          </div>
+
+          {/* Рекорд перекрывает обычную подсказку — это более полное сообщение
+              (уже включает факт, что вес отличается от прошлого), а не эхо
+              того же числа рядом с двумя разными подписями. */}
+          {isRecord ? (
+            <span className={styles.record}>Новый рекорд веса</span>
+          ) : (
+            // Поле уже предзаполнено прошлым весом при старте тренировки —
+            // подсказка нужна, только если он от него отличается (сам изменил
+            // или прошлого результата не было вовсе).
+            lastSession?.weight != null && weight !== lastSession.weight && (
+              <span className={styles.hint}>в прошлый раз: {formatWeight(lastSession.weight)} кг</span>
+            )
+          )}
         </div>
 
-        {/* Рекорд перекрывает обычную подсказку — это более полное сообщение
-            (уже включает факт, что вес отличается от прошлого), а не эхо
-            того же числа рядом с двумя разными подписями. */}
-        {isRecord ? (
-          <span className={styles.record}>Новый рекорд веса</span>
-        ) : (
-          // Поле уже предзаполнено прошлым весом при старте тренировки —
-          // подсказка нужна, только если он от него отличается (сам изменил
-          // или прошлого результата не было вовсе).
-          lastSession?.weight != null && weight !== lastSession.weight && (
-            <span className={styles.hint}>в прошлый раз: {formatWeight(lastSession.weight)} кг</span>
-          )
-        )}
+        <SetTracker
+          sets={block.sets}
+          reps={reps}
+          repRange={block.reps}
+          onClose={handleClose}
+          onEdit={handleEdit}
+          onClear={handleClear}
+        />
       </div>
 
-      <SetTracker
-        sets={block.sets}
-        reps={reps}
-        repRange={block.reps}
-        onClose={handleClose}
-        onEdit={handleEdit}
-        onClear={handleClear}
-      />
+      {/* Во всю высоту карточки, не только строку заголовка — иначе на
+          телефоне картинка выходит слишком мелкой, чтобы на бегу между
+          подходами различить упражнение с одного взгляда. */}
+      {(exercise.video || zone) && (
+        <button className={styles.preview} onClick={handleOpen} aria-label={`Техника: ${exercise.name}`}>
+          <ExercisePreview
+            videoId={exercise.video}
+            view={zone?.view}
+            zone={zone?.zone}
+            className={styles.previewImg}
+          />
+        </button>
+      )}
     </article>
   )
 }
