@@ -1,7 +1,9 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
 import SetTracker from './SetTracker.jsx'
+import EquipmentIcon from './EquipmentIcon.jsx'
 import { formatTime } from '../lib/timer.js'
 import { formatWeight, stepWeight } from '../lib/format.js'
+import { equipmentIcon } from '../lib/equipment.js'
 import { useHoldStep } from '../hooks/useHoldStep.js'
 import styles from './ExerciseRow.module.css'
 
@@ -61,12 +63,20 @@ function ExerciseRow({
   // Все подходы закрыты — видно на уровне всей карточки, а не только по
   // кружкам внутри, чтобы прогресс тренировки читался с одного взгляда.
   const allDone = reps != null && reps.length === block.sets && reps.every((r) => r != null)
+  const icon = equipmentIcon(exercise.equipment)
 
   return (
     <article className={allDone ? `${styles.row} ${styles.done}` : styles.row}>
       <button className={styles.head} onClick={handleOpen} aria-label={`Техника: ${exercise.name}`}>
-        <span className={styles.name}>{exercise.name}</span>
-        <span className={styles.params}>{params}</span>
+        {icon && (
+          <span className={styles.icon}>
+            <EquipmentIcon type={icon} />
+          </span>
+        )}
+        <span className={styles.headText}>
+          <span className={styles.name}>{exercise.name}</span>
+          <span className={styles.params}>{params}</span>
+        </span>
       </button>
 
       <div className={styles.weight}>

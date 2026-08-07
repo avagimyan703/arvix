@@ -13,11 +13,31 @@
 .done { border-color: var(--accent); }
 
 .head {
-  display: grid;
-  gap: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
   padding: 0;
   text-align: left;
+}
+
+.icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-dim);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.headText {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
 }
 
 .name {
