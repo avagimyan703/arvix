@@ -9,33 +9,61 @@
   animation: scrimIn 0.2s ease;
 }
 
+/* Синхронно с уездом шторки вниз — фон гаснет тем же переходом, а не
+   рывком после того, как компонент уже размонтирован. */
+.scrimOut {
+  animation: none;
+  background: rgba(0, 0, 0, 0);
+  transition: background-color 220ms ease;
+}
+
 .sheet {
   width: 100%;
   max-width: 560px;
-  max-height: 92vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+  height: 90dvh;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   border-top: 1px solid var(--line);
   border-radius: 20px 20px 0 0;
-  animation: sheetIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.handleArea {
+  display: flex;
+  justify-content: center;
+  flex: none;
+  padding: var(--space-2) 0 var(--space-1);
+  /* Жест ведём вручную (touchmove) — браузер не должен параллельно
+     скроллить или зумить страницу под пальцем, пока тянем ручку. */
+  touch-action: none;
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   /* Прокрутка остаётся рабочей, сама полоса — нет. На телефоне её и так
      не видно; след от неё — только на десктопе, где мы это и отлаживаем. */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.sheet::-webkit-scrollbar {
+.content::-webkit-scrollbar {
   display: none;
 }
 
 @keyframes scrimIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-@keyframes sheetIn {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
 }
