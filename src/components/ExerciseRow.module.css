@@ -1,6 +1,6 @@
 .row {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: var(--space-4);
   padding: var(--space-4);
   background: var(--surface);
@@ -54,8 +54,11 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  align-self: stretch;
   width: 110px;
+  /* Не привязана к высоте .body: степпер повторов раскрывается и меняет
+     высоту соседней колонки, а превью должно остаться таким, как было,
+     а не растягиваться следом. Пропорция — как у самих кадров рилсов. */
+  aspect-ratio: 9 / 16;
   padding: 0;
   overflow: hidden;
   background: var(--surface-2);
