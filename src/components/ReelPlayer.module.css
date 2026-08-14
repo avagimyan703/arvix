@@ -18,23 +18,62 @@
   background: var(--surface-2);
 }
 
-.status {
+/* Пропорция ролика — 9:16, но во всю ширину шторки он занял бы её
+   целиком, и «Как делать» с ошибками ушло бы под экран. Потолок по
+   высоте оставляет видно, что под роликом есть текст.
+   contain, а не cover: в этих разборах кадр часто поделён на «неверно»
+   сверху и «верно» снизу — кадрирование срезало бы половину смысла. */
+.clipWrap {
+  aspect-ratio: 9 / 16;
+  max-height: 55dvh;
+}
+
+.clip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.poster {
   position: absolute;
   inset: 0;
   z-index: 0;
-  display: grid;
-  place-content: center;
-  margin: 0;
-  padding: 0 var(--space-6);
-  text-align: center;
-  font-size: var(--text-sm);
-  line-height: 1.5;
-  color: var(--text-dim);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.statusLink {
-  color: var(--accent);
-  text-decoration: none;
+.facade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  background: rgba(15, 17, 21, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+}
+
+.play::after {
+  /* Треугольник рамками — ради одной фигуры не тащим иконочный файл. */
+  content: '';
+  border-style: solid;
+  border-width: 9px 0 9px 15px;
+  border-color: transparent transparent transparent #fff;
+  /* Оптический центр: треугольник тяжелее слева, геометрический — не тот. */
+  margin-left: 4px;
 }
 
 .frame {
@@ -48,11 +87,4 @@
      чтобы Инстаграм не сжимал сам плеер. 170px с запасом хватает. */
   height: calc(100% + 54px + 170px);
   border: 0;
-}
-
-/* Пока плеер не готов, держим его прозрачным, а не display:none —
-   скрытый через display iframe в части браузеров не начинает загрузку. */
-.hidden {
-  opacity: 0;
-  pointer-events: none;
 }

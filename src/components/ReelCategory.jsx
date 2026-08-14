@@ -34,7 +34,10 @@ export default function ReelCategory({ library, categoryId, onBack }) {
 
               {open && (
                 <div className={styles.player}>
-                  <ReelPlayer reel={reel} title={reel.note} />
+                  {/* Тап «смотреть» выше — уже согласие ждать видео;
+                      кнопка воспроизведения поверх была бы вторым тапом
+                      за то же самое. */}
+                  <ReelPlayer reel={reel} title={reel.note} autoLoad />
                 </div>
               )}
             </li>

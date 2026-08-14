@@ -36,7 +36,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,json}'],
+        // Кадры и ролики упражнений — такая же часть офлайна, как код:
+        // связь пропадает как раз в зале, в подвале с железом. Раньше
+        // сюда попадали только js/css/html/json, и без сети разбор
+        // движения оставался пустым прямоугольником.
+        globPatterns: ['**/*.{js,css,html,json,png,jpg,svg,webmanifest,mp4}'],
       },
     }),
   ],
