@@ -11,9 +11,30 @@ const WORKOUT_FORMS = ['тренировка', 'тренировки', 'трен
 // историю целиком, лимит касается только того, что видно на этом экране.
 const VISIBLE_LIMIT = 60
 
-export default function HistoryScreen({ history, program, exercises, onBack }) {
+export default function HistoryScreen({
+  history, program, exercises, onDelete, onWeight, onRep, onBack,
+}) {
   const [copied, setCopied] = useState(false)
+  // Индекс правимой записи, не флаг: открытой может быть только одна, иначе
+  // дневник превращается в поле из десятков одинаковых числовых полей.
+  const [editing, setEditing] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(null)
+  // visible — префикс history, поэтому индекс в нём совпадает с индексом в
+  // полной истории. Правка адресуется именно им, так что срез обязан
+  // остаться префиксом: любая сортировка или фильтр здесь сломают адресацию.
   const visible = history.slice(0, VISIBLE_LIMIT)
+
+  function closeEditor() {
+    setEditing(null)
+    setConfirmDelete(null)
+  }
+
+  function handleDelete(index) {
+    onDelete(index)
+    closeEditor()
+  }
+
+  const num = (value) => (value === '' ? null : Number(value))
 
   const dayLabel = (dayId) => {
     const d = program.days.find((x) => x.id === dayId)
@@ -81,6 +102,7 @@ export default function HistoryScreen({ history, program, exercises, onBack }) {
           <ul className={styles.list}>
             {visible.map((s, i) => {
               const duration = sessionDuration(s)
+              const open = editing === i
               return (
                 <li key={`${s.date}-${i}`} className={styles.session}>
                   <div className={styles.sessionHead}>
@@ -89,23 +111,95 @@ export default function HistoryScreen({ history, program, exercises, onBack }) {
                       {dayLabel(s.dayId)}{duration != null && ` · ${duration} мин`}
                     </span>
                   </div>
-                  <ul className={styles.exercises}>
-                    {Object.entries(s.exercises).map(([id, done]) => (
-                      <li key={id} className={styles.exercise}>
-                        <span className={styles.exName}>{exercises[id]?.name ?? id}</span>
-                        <span className={styles.exData}>
-                          {done.weight != null ? `${formatWeight(done.weight)} кг · ` : ''}
-                          {done.reps.map((r) => (r == null ? '—' : r)).join(', ')}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  {open ? (
+                    <ul className={styles.exercises}>
+                      {Object.entries(s.exercises).map(([id, done]) => (
+                        <li key={id} className={styles.exerciseEdit}>
+                          <span className={styles.exName}>{exercises[id]?.name ?? id}</span>
+                          <div className={styles.fields}>
+                            <label className={styles.field}>
+                              <span className={styles.fieldLabel}>кг</span>
+                              <input
+                                className={styles.input}
+                                type="number"
+                                inputMode="decimal"
+                                step="0.5"
+                                value={done.weight ?? ''}
+                                placeholder="—"
+                                onChange={(e) => onWeight(i, id, num(e.target.value))}
+                              />
+                            </label>
+                            {done.reps.map((r, k) => (
+                              <label key={k} className={styles.field}>
+                                <span className={styles.fieldLabel}>{k + 1}</span>
+                                <input
+                                  className={styles.input}
+                                  type="number"
+                                  inputMode="numeric"
+                                  value={r ?? ''}
+                                  placeholder="—"
+                                  onChange={(e) => onRep(i, id, k, num(e.target.value))}
+                                />
+                              </label>
+                            ))}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <ul className={styles.exercises}>
+                      {Object.entries(s.exercises).map(([id, done]) => (
+                        <li key={id} className={styles.exercise}>
+                          <span className={styles.exName}>{exercises[id]?.name ?? id}</span>
+                          <span className={styles.exData}>
+                            {done.weight != null ? `${formatWeight(done.weight)} кг · ` : ''}
+                            {done.reps.map((r) => (r == null ? '—' : r)).join(', ')}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
                   {s.athletic.length > 0 && (
                     <p className={styles.athletic}>
                       Финишер: {s.athletic.map((id) => exercises[id]?.name ?? id).join(', ')}
                     </p>
                   )}
                   {s.note && <p className={styles.sessionNote}>«{s.note}»</p>}
+
+                  {open ? (
+                    <div className={styles.editBar}>
+                      {/* Два шага, как при отмене тренировки: один случайный
+                          тап не должен стирать состоявшийся день. */}
+                      {confirmDelete === i ? (
+                        <>
+                          <button className={styles.deleteConfirm} onClick={() => handleDelete(i)}>
+                            Да, удалить
+                          </button>
+                          <button className={styles.editDone} onClick={() => setConfirmDelete(null)}>
+                            Нет
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button className={styles.delete} onClick={() => setConfirmDelete(i)}>
+                            Удалить тренировку
+                          </button>
+                          <button className={styles.editDone} onClick={closeEditor}>
+                            Готово
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      className={styles.edit}
+                      onClick={() => { setEditing(i); setConfirmDelete(null) }}
+                    >
+                      Изменить
+                    </button>
+                  )}
                 </li>
               )
             })}

@@ -41,6 +41,35 @@ export function appendSession(history, current, date, finishedAt = null, note = 
 }
 
 /**
+ * Собирает кеш «последний результат по упражнению» заново из всей истории.
+ *
+ * Обычно этот кеш накапливается по одной тренировке за раз (finishWorkout),
+ * и пересобирать его незачем. Но правка дневника идёт в обратную сторону:
+ * запись удалили или поменяли задним числом, а кеш всё ещё помнит старое —
+ * и молча кормит им прогрессию и подсказку «в прошлый раз». Дешевле
+ * пересчитать от источника, чем пытаться откатить кеш точечно.
+ *
+ * history отсортирована от новых к старым, поэтому первое встреченное
+ * упоминание упражнения и есть самое свежее.
+ *
+ * @param {Array} history
+ * @returns {Record<string, {weight: number|null, reps: Array<number|null>, date: string}>}
+ */
+export function rebuildLastSession(history) {
+  const lastSession = {}
+  for (const session of history) {
+    for (const [id, done] of Object.entries(session.exercises ?? {})) {
+      if (lastSession[id]) continue
+      // Упражнение без единого закрытого подхода не считается сделанным —
+      // то же правило, что и в appendSession.
+      if (done.reps.every((r) => r === null || r === undefined)) continue
+      lastSession[id] = { weight: done.weight ?? null, reps: done.reps, date: session.date }
+    }
+  }
+  return lastSession
+}
+
+/**
  * Длительность тренировки в минутах — для журнала и итогового экрана.
  * null, если не знаем время окончания (старые записи до этой функции).
  */

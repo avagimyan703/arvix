@@ -1,4 +1,4 @@
-import { appendSession } from './history.js'
+import { appendSession, rebuildLastSession } from './history.js'
 
 /**
  * exerciseIds (обычно day.blocks.map(b => b.exercise)) — заранее заполняет
@@ -91,6 +91,60 @@ export function finishWorkout(state, date, finishedAt = null, note = null) {
 export function cancelWorkout(state) {
   if (!state.current) return state
   return { ...state, current: null }
+}
+
+/**
+ * Правка дневника задним числом.
+ *
+ * Все три функции ниже возвращают состояние с пересобранным lastSession, и
+ * это не перестраховка: кеш последнего результата кормит и подсказку по
+ * весу, и предзаполнение поля на старте тренировки. Поправил вес в записи,
+ * а кеш остался прежним — и приложение продолжит советовать вес, которого в
+ * дневнике уже нет.
+ *
+ * Запись адресуется индексом в history: даты не уникальны (две тренировки в
+ * один день — обычное дело), а порядок стабилен.
+ */
+function replaceSession(state, index, nextSession) {
+  const history = [...state.history]
+  history[index] = nextSession
+  return { ...state, history, lastSession: rebuildLastSession(history) }
+}
+
+function sessionExercise(state, index, exerciseId) {
+  const session = state.history?.[index]
+  return session?.exercises?.[exerciseId] ?? null
+}
+
+export function deleteSession(state, index) {
+  if (!state.history?.[index]) return state
+  const history = state.history.filter((_, i) => i !== index)
+  return { ...state, history, lastSession: rebuildLastSession(history) }
+}
+
+export function setSessionWeight(state, index, exerciseId, weight) {
+  const done = sessionExercise(state, index, exerciseId)
+  if (!done) return state
+
+  const session = state.history[index]
+  return replaceSession(state, index, {
+    ...session,
+    exercises: { ...session.exercises, [exerciseId]: { ...done, weight } },
+  })
+}
+
+export function setSessionRep(state, index, exerciseId, setIndex, repsValue) {
+  const done = sessionExercise(state, index, exerciseId)
+  if (!done || setIndex < 0 || setIndex >= done.reps.length) return state
+
+  const reps = [...done.reps]
+  reps[setIndex] = repsValue
+
+  const session = state.history[index]
+  return replaceSession(state, index, {
+    ...session,
+    exercises: { ...session.exercises, [exerciseId]: { ...done, reps } },
+  })
 }
 
 export function isBlockDone(block, reps) {

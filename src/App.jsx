@@ -75,6 +75,9 @@ export default function App() {
         history={w.state.history}
         program={program}
         exercises={exercises}
+        onDelete={w.deleteSession}
+        onWeight={w.setSessionWeight}
+        onRep={w.setSessionRep}
         onBack={goToDays}
       />
     )

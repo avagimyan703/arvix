@@ -95,6 +95,83 @@
 
 .exData { flex: none; color: var(--text-dim); font-variant-numeric: tabular-nums; }
 
+.exerciseEdit {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.fields { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.field { display: grid; gap: 2px; justify-items: center; }
+
+.fieldLabel {
+  font-size: var(--text-caption);
+  color: var(--text-dim);
+}
+
+.input {
+  width: 60px;
+  height: var(--tap);
+  padding: 0 var(--space-1);
+  font: inherit;
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  /* Родной степпер поля вылезает поверх текста на узких полях. */
+  -moz-appearance: textfield;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.edit {
+  min-height: var(--tap);
+  margin-top: var(--space-3);
+  padding: 0;
+  font-size: var(--text-footnote);
+  color: var(--text-dim);
+}
+
+.editBar {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.editBar button {
+  flex: 1;
+  min-height: var(--tap);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.editDone {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.delete {
+  color: var(--danger);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+.deleteConfirm {
+  color: var(--accent-ink);
+  background: var(--danger);
+}
+
 .athletic {
   margin: var(--space-3) 0 0;
   font-size: var(--text-footnote);

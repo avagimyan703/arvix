@@ -72,5 +72,17 @@ export function useWorkout() {
     cancelWorkout: useCallback(() => {
       apply((s) => workout.cancelWorkout(s))
     }, [apply]),
+
+    deleteSession: useCallback((index) => {
+      apply((s) => workout.deleteSession(s, index))
+    }, [apply]),
+
+    setSessionWeight: useCallback((index, id, weight) => {
+      apply((s) => workout.setSessionWeight(s, index, id, weight))
+    }, [apply]),
+
+    setSessionRep: useCallback((index, id, setIndex, reps) => {
+      apply((s) => workout.setSessionRep(s, index, id, setIndex, reps))
+    }, [apply]),
   }
 }
