@@ -1,0 +1,43 @@
+/* Панель прижата к низу и не уезжает при прокрутке: на телефоне большой
+   палец достаёт до неё всегда, а до верха экрана — нет. */
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+
+/* Вкладки держим в той же колонке 560px, что и содержимое экранов: иначе на
+   планшете и в окне браузера три кнопки разъезжаются по краям, теряя связь
+   с контентом над ними. */
+.inner {
+  display: flex;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom));
+}
+
+.tab {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  min-height: var(--tap);
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+}
+
+.tab:active { background: var(--surface); }
+
+.active { color: var(--accent); }
+
+.name {
+  font-size: var(--text-caption);
+  font-weight: 600;
+}

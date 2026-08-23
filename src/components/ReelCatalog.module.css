@@ -1,7 +1,8 @@
 .screen {
   max-width: 560px;
   margin: 0 auto;
-  padding: var(--space-4) var(--space-4) calc(var(--space-7) + env(safe-area-inset-bottom));
+  /* Снизу — место под нижнюю панель разделов. */
+  padding: var(--space-4) var(--space-4) calc(var(--tap) + var(--space-7) + env(safe-area-inset-bottom));
 }
 
 .back {
