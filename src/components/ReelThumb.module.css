@@ -1,0 +1,17 @@
+/* Ролики вертикальные, поэтому кадр обрезаем по центру: в квадрате нужен
+   человек с железом, а не полосы пустого фона сверху и снизу. */
+.thumb {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}

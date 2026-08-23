@@ -28,13 +28,23 @@
   overflow: hidden;
 }
 
+/* Кадр слева, текст справа: миниатюра отвечает «что за движение», заголовок
+   уточняет «про что именно» — и глаз идёт от картинки к тексту, а не наоборот. */
 .head {
-  display: grid;
-  gap: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
   min-height: var(--tap);
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4);
   text-align: left;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
 }
 
 .note {

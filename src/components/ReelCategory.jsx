@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ReelPlayer from './ReelPlayer.jsx'
+import ReelThumb from './ReelThumb.jsx'
 import { reelsInCategory } from '../lib/reels.js'
 import styles from './ReelCategory.module.css'
 
@@ -26,9 +27,12 @@ export default function ReelCategory({ library, categoryId, onBack }) {
                 onClick={() => setOpenId(open ? null : reel.id)}
                 aria-expanded={open}
               >
-                <span className={styles.note}>{reel.note}</span>
-                <span className={styles.meta}>
-                  {reel.author} · {open ? 'свернуть' : 'смотреть'}
+                <ReelThumb id={reel.id} />
+                <span className={styles.text}>
+                  <span className={styles.note}>{reel.note}</span>
+                  <span className={styles.meta}>
+                    {reel.author} · {open ? 'свернуть' : 'смотреть'}
+                  </span>
                 </span>
               </button>
 
