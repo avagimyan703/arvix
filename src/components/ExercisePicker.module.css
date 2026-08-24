@@ -1,0 +1,163 @@
+.picker { padding: 0 var(--space-4) var(--space-6); }
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-title-lg);
+}
+
+.hint {
+  margin: 0 0 var(--space-6);
+  font-size: var(--text-body);
+  color: var(--text-dim);
+}
+
+.group { margin-bottom: var(--space-6); }
+
+.groupName {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.rowOn { border-color: var(--accent); }
+
+/* Выбранное с уже закрытыми подходами снять нельзя — приглушаем, но
+   галочку оставляем: это не «выключено», это «уже в работе». */
+.row:disabled { opacity: 0.55; }
+
+.mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent-ink);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.markOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.name {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.meta {
+  font-size: var(--text-footnote);
+  color: var(--text-dim);
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-7);
+}
+
+.save {
+  width: 100%;
+  min-height: var(--tap);
+  font-size: var(--text-title-sm);
+  font-weight: 600;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.save:disabled {
+  color: var(--text-dim);
+  background: var(--surface-2);
+}
+
+.cancel {
+  width: 100%;
+  min-height: var(--tap);
+  font-size: var(--text-md);
+  color: var(--text-dim);
+}
+
+.searchRow {
+  position: relative;
+  margin-bottom: var(--space-5);
+}
+
+/* 16px — иначе Safari на iPhone зумит страницу при фокусе, и вёрстка уезжает. */
+.search {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--space-8) 0 var(--space-4);
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  -webkit-appearance: none;
+}
+
+.search::placeholder { color: var(--text-dim); }
+.search:focus { outline: none; border-color: var(--accent); }
+.search::-webkit-search-cancel-button { display: none; }
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--tap);
+  height: 100%;
+  font-size: var(--text-title);
+  line-height: 1;
+  color: var(--text-dim);
+}
+
+.nothing {
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--text-dim);
+}
+
+.divider {
+  margin: var(--space-7) 0 var(--space-4);
+  padding-top: var(--space-4);
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border-top: 1px solid var(--line);
+}

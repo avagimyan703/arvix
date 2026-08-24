@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { parseHash, subscribeRoute, navigate } from './lib/router.js'
 import { findDay } from './lib/program.js'
+import { exercisePool } from './lib/exercisePool.js'
 import { useWorkout } from './hooks/useWorkout.js'
 import program from './data/program.json'
 import exercises from './data/exercises.json'
@@ -24,6 +25,11 @@ const TAB_ROUTES = {
 export default function App() {
   const [route, setRoute] = useState(() => parseHash(window.location.hash))
   const w = useWorkout()
+
+  // Библиотека и каталог одним объектом: экраны ищут упражнение в одном
+  // месте, и дневник умеет назвать по имени даже то, что выбрано из
+  // каталога, — иначе в истории остался бы голый код рилса.
+  const pool = useMemo(() => exercisePool(exercises, reelLibrary), [])
 
   useEffect(() => subscribeRoute(setRoute), [])
 
@@ -50,10 +56,12 @@ export default function App() {
     return (
       <WorkoutScreen
         day={day}
-        exercises={exercises}
+        program={program}
+        exercises={pool}
         library={reelLibrary}
         state={w.state}
         onStart={w.startWorkout}
+        onPicked={w.setPicked}
         onWeight={w.setWeight}
         onCloseSet={w.closeSet}
         onClearSet={w.clearSet}
@@ -86,7 +94,7 @@ export default function App() {
         <HistoryScreen
           history={w.state.history}
           program={program}
-          exercises={exercises}
+          exercises={pool}
           onDelete={w.deleteSession}
           onWeight={w.setSessionWeight}
           onRep={w.setSessionRep}

@@ -27,6 +27,26 @@ export function startWorkout(state, dayId, startedAt, exerciseIds = []) {
   }
 }
 
+/**
+ * Состав текущей тренировки — какие упражнения человек решил делать сегодня.
+ *
+ * Хранится в сессии, а не в программе: программа это план на все недели, и
+ * замена жима на отжимания в конкретный четверг не должна её переписывать.
+ * Пока состав не выбран, поля нет вовсе, и экран берёт блоки дня как раньше —
+ * так старые незавершённые тренировки продолжают работать без миграции.
+ *
+ * @param {object} state
+ * @param {string[]} exerciseIds — в том порядке, в каком делать
+ * @returns {object}
+ */
+export function setPicked(state, exerciseIds) {
+  if (!state.current) return state
+  return {
+    ...state,
+    current: { ...state.current, picked: [...exerciseIds] },
+  }
+}
+
 export function setWeight(state, exerciseId, weight) {
   if (!state.current) return state
   return {

@@ -27,10 +27,15 @@ export default function ReelPlayer({ reel, title, autoLoad = false }) {
   const src = embedUrl(reel.url)
   const [clipFailed, setClipFailed] = useState(false)
   const [started, setStarted] = useState(autoLoad)
-  const [posterFailed, setPosterFailed] = useState(false)
+  // Постер ищем в двух местах по очереди. thumbs — кадр из нарезанного
+  // клипа, 480px во всю ширину, но есть только у упражнений программы.
+  // previews — мелкая миниатюра из каталога, зато у всех разборов. Порядок
+  // именно такой: где есть хороший кадр, показываем его, а не растянутый.
+  const [posterStep, setPosterStep] = useState(0)
 
   const base = import.meta.env.BASE_URL
-  const poster = `${base}thumbs/${reel.id}.jpg`
+  const posters = [`${base}thumbs/${reel.id}.jpg`, `${base}previews/${reel.id}.jpg`]
+  const poster = posters[posterStep] ?? null
 
   // Свой ролик пробуем всегда: наличие файла проверяется не списком в
   // коде, который разъедется с каталогом, а тем, отдал ли его сервер.
@@ -40,7 +45,7 @@ export default function ReelPlayer({ reel, title, autoLoad = false }) {
         <video
           className={styles.clip}
           src={`${base}clips/${reel.id}.mp4`}
-          poster={posterFailed ? undefined : poster}
+          poster={poster ?? undefined}
           title={title}
           autoPlay
           muted
@@ -60,12 +65,12 @@ export default function ReelPlayer({ reel, title, autoLoad = false }) {
       {/* Кадр лежит под плеером и остаётся там после запуска: пока
           страница Инстаграма рисуется, видно упражнение, а не пустой
           прямоугольник. */}
-      {!posterFailed && (
+      {poster && (
         <img
           className={styles.poster}
           src={poster}
           alt=""
-          onError={() => setPosterFailed(true)}
+          onError={() => setPosterStep((s) => s + 1)}
         />
       )}
 

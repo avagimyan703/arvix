@@ -109,3 +109,31 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
 }
+
+/* Кнопка состава — над списком упражнений: решение «что делать сегодня»
+   принимают, глядя на сам список, а не на заголовок экрана. */
+.compose {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--tap);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.compose:active { border-color: var(--accent); }
+
+.composeName {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.composeHint {
+  font-size: var(--text-footnote);
+  color: var(--text-dim);
+}

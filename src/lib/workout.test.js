@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
-  startWorkout, setWeight, closeSet, clearSet, toggleAthletic, finishWorkout, cancelWorkout,
-  isBlockDone, sessionProgress,
+  startWorkout, setWeight, setPicked, closeSet, clearSet, toggleAthletic, finishWorkout,
+  cancelWorkout, isBlockDone, sessionProgress,
 } from './workout.js'
 
 const empty = { version: 1, lastSession: {}, current: null }
@@ -83,6 +83,35 @@ describe('clearSet', () => {
 describe('setWeight', () => {
   it('запоминает рабочий вес', () => {
     expect(setWeight(started, 'back-squat', 82.5).current.weights).toEqual({ 'back-squat': 82.5 })
+  })
+})
+
+describe('setPicked', () => {
+  it('запоминает состав в текущей сессии', () => {
+    const s = setPicked(started, ['back-squat', 'leg-press'])
+    expect(s.current.picked).toEqual(['back-squat', 'leg-press'])
+  })
+
+  it('порядок сохраняется — он же порядок выполнения', () => {
+    const s = setPicked(started, ['leg-press', 'back-squat'])
+    expect(s.current.picked).toEqual(['leg-press', 'back-squat'])
+  })
+
+  it('без начатой тренировки состояние не меняется', () => {
+    expect(setPicked(empty, ['back-squat'])).toBe(empty)
+  })
+
+  it('не держит ссылку на переданный список', () => {
+    const ids = ['back-squat']
+    const s = setPicked(started, ids)
+    ids.push('leg-press')
+    expect(s.current.picked).toEqual(['back-squat'])
+  })
+
+  it('не трогает уже отмеченные подходы', () => {
+    const withReps = closeSet(started, 'back-squat', 0, 3, 8)
+    const s = setPicked(withReps, ['leg-press'])
+    expect(s.current.reps['back-squat']).toEqual([8, null, null])
   })
 })
 

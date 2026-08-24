@@ -52,6 +52,10 @@ export function useWorkout() {
       apply((s) => workout.setWeight(s, id, weight))
     }, [apply]),
 
+    setPicked: useCallback((exerciseIds) => {
+      apply((s) => workout.setPicked(s, exerciseIds))
+    }, [apply]),
+
     closeSet: useCallback((id, index, sets, reps) => {
       apply((s) => workout.closeSet(s, id, index, sets, reps))
     }, [apply]),

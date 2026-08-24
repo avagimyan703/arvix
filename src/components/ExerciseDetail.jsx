@@ -137,19 +137,26 @@ export default function ExerciseDetail({
         <p className={styles.noVideo}>Видео к этому упражнению пока не добавлено.</p>
       )}
 
-      <section className={styles.section}>
-        <h2 className={styles.heading}>Как делать</h2>
-        <ol className={styles.steps}>
-          {exercise.steps.map((step, i) => <li key={i}>{step}</li>)}
-        </ol>
-      </section>
+      {/* У упражнения из каталога разобранной техники нет — там её заменяет
+          сам ролик выше. Пустые заголовки «Как делать» и «Частые ошибки»
+          обещали бы разбор, которого не будет. */}
+      {exercise.steps.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.heading}>Как делать</h2>
+          <ol className={styles.steps}>
+            {exercise.steps.map((step, i) => <li key={i}>{step}</li>)}
+          </ol>
+        </section>
+      )}
 
-      <section className={styles.section}>
-        <h2 className={styles.heading}>Частые ошибки</h2>
-        <ul className={styles.mistakes}>
-          {exercise.mistakes.map((m, i) => <li key={i}>{m}</li>)}
-        </ul>
-      </section>
+      {exercise.mistakes.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.heading}>Частые ошибки</h2>
+          <ul className={styles.mistakes}>
+            {exercise.mistakes.map((m, i) => <li key={i}>{m}</li>)}
+          </ul>
+        </section>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.heading}>Работают мышцы</h2>
@@ -175,7 +182,7 @@ export default function ExerciseDetail({
         </section>
       )}
 
-      <p className={styles.tip}>{exercise.tip}</p>
+      {exercise.tip && <p className={styles.tip}>{exercise.tip}</p>}
     </div>
   )
 }
