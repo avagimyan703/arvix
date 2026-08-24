@@ -15,10 +15,106 @@
 .title { margin: var(--space-2) 0 var(--space-1); font-size: var(--text-title-lg); }
 
 .subtitle {
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-4);
   color: var(--text-dim);
   font-size: var(--text-sm);
 }
+
+.searchRow {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+/* 16px в поле ввода — не про вкус: Safari на iPhone зумит страницу, если
+   шрифт меньше, и после первого же тапа по поиску вёрстка уезжает. */
+.search {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--space-8) 0 var(--space-4);
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  -webkit-appearance: none;
+}
+
+.search::placeholder { color: var(--text-dim); }
+
+.search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Родной крестик у type="search" в вебките мелкий и появляется не всегда,
+   поэтому свой — с нормальной зоной нажатия. */
+.search::-webkit-search-cancel-button { display: none; }
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--tap);
+  height: 100%;
+  font-size: var(--text-title);
+  line-height: 1;
+  color: var(--text-dim);
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Чтобы крайние чипы не липли к краям экрана при прокрутке вбок. */
+  padding: 2px var(--space-1);
+  margin-left: calc(var(--space-1) * -1);
+  margin-right: calc(var(--space-1) * -1);
+}
+
+.chips::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex: none;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-footnote);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.chipOn {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.nothing { margin-top: var(--space-6); }
+
+.nothingText {
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--text-dim);
+}
+
+.reset {
+  margin-top: var(--space-4);
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.reset:active { border-color: var(--accent); }
 
 .list {
   list-style: none;

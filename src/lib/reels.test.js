@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { embedUrl, reelId, reelsInCategory, countByCategory, reelForExercise } from './reels.js'
+import { embedUrl, reelId, reelsInCategory, countByCategory, reelForExercise, searchReels } from './reels.js'
 
 const library = {
   categories: [
@@ -73,6 +73,54 @@ describe('countByCategory', () => {
   it('рилс с неизвестной категорией не ломает счёт', () => {
     const dirty = { ...library, reels: { ...library.reels, DDD: { category: 'нет-такой' } } }
     expect(countByCategory(dirty)).toEqual({ back: 2, legs: 1, triceps: 0 })
+  })
+})
+
+describe('searchReels', () => {
+  const wide = {
+    categories: library.categories,
+    reels: {
+      ...library.reels,
+      DDD: { category: 'back', note: 'Жим лёжа: разбор техники', author: 'demicstory' },
+      EEE: { category: 'legs', note: 'Жим ногами: постановка стоп', author: 'appyoucan' },
+    },
+  }
+
+  it('пустой запрос показывает всё, а не ничего', () => {
+    expect(searchReels(wide, '')).toHaveLength(5)
+    expect(searchReels(wide, '   ')).toHaveLength(5)
+  })
+
+  it('ищет по заметке без учёта регистра', () => {
+    expect(searchReels(wide, 'ПРИСЕД').map((r) => r.id)).toEqual(['CCC'])
+  })
+
+  it('ищет по автору', () => {
+    expect(searchReels(wide, 'appyoucan').map((r) => r.id)).toEqual(['EEE'])
+  })
+
+  it('слова соединяются через И, а не ИЛИ', () => {
+    expect(searchReels(wide, 'жим ногами').map((r) => r.id)).toEqual(['EEE'])
+  })
+
+  it('порядок слов не важен', () => {
+    expect(searchReels(wide, 'ногами жим').map((r) => r.id)).toEqual(['EEE'])
+  })
+
+  it('«е» в запросе находит «ё» в заметке', () => {
+    expect(searchReels(wide, 'лежа').map((r) => r.id)).toEqual(['DDD'])
+  })
+
+  it('сужается до категории', () => {
+    expect(searchReels(wide, 'жим', 'legs').map((r) => r.id)).toEqual(['EEE'])
+  })
+
+  it('категория без запроса отдаёт всю категорию', () => {
+    expect(searchReels(wide, '', 'back').map((r) => r.id)).toEqual(['AAA', 'BBB', 'DDD'])
+  })
+
+  it('ничего не найдено — пустой список, а не падение', () => {
+    expect(searchReels(wide, 'брасс')).toEqual([])
   })
 })
 

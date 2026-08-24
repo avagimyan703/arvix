@@ -1,0 +1,46 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Кадр слева, текст справа: миниатюра отвечает «что за движение», заголовок
+   уточняет «про что именно» — и глаз идёт от картинки к тексту, а не наоборот. */
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.note {
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.meta {
+  font-size: var(--text-footnote);
+  color: var(--text-dim);
+}
+
+.player { padding: 0 var(--space-3) var(--space-3); }

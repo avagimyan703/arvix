@@ -37,6 +37,50 @@ export function reelsInCategory(library, categoryId) {
 }
 
 /**
+ * Приводит строку к виду для сравнения: нижний регистр и ё → е.
+ *
+ * Про «ё» отдельно: заметки в каталоге написаны с ней («Жим лёжа»), а
+ * набирают в поиске почти всегда через «е». Без этой замены половина
+ * запросов про жим не находила бы ничего.
+ *
+ * @param {string} s
+ * @returns {string}
+ */
+function normalize(s) {
+  return String(s ?? '').toLowerCase().replace(/ё/g, 'е')
+}
+
+/**
+ * Поиск по каталогу: по заметке и автору, с необязательным сужением до
+ * одной категории.
+ *
+ * Слова запроса соединяются через И, а не ИЛИ: «жим гантелей» должен
+ * оставить только жимы гантелей, а не всё, где встретилось хоть одно из
+ * двух слов. Порядок слов при этом не важен — ищем вхождения, а не фразу.
+ *
+ * Пустой запрос — не ошибка и не пустая выдача: это «показать всё»
+ * (с учётом категории), чтобы экран не мигал между состояниями, пока
+ * строку набирают и стирают.
+ *
+ * @param {{reels: object}} library
+ * @param {string} query
+ * @param {string|null} [categoryId]
+ * @returns {Array<{id: string} & object>}
+ */
+export function searchReels(library, query, categoryId = null) {
+  const tokens = normalize(query).split(/\s+/).filter(Boolean)
+
+  let rows = Object.entries(library.reels).map(([id, r]) => ({ id, ...r }))
+  if (categoryId) rows = rows.filter((r) => r.category === categoryId)
+  if (tokens.length === 0) return rows
+
+  return rows.filter((r) => {
+    const hay = normalize(`${r.note} ${r.author}`)
+    return tokens.every((t) => hay.includes(t))
+  })
+}
+
+/**
  * Сколько рилсов в каждой категории. Нужно, чтобы на экране каталога
  * показать счётчик и приглушить пустые категории.
  *
