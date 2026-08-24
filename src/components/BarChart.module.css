@@ -1,0 +1,55 @@
+.chart {
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.col {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+
+/* Дорожка фиксированной высоты: без неё столбцы выравниваются по своему
+   содержимому и нулевые недели поднимают ряд, ломая общую базовую линию. */
+.track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 84px;
+}
+
+/* Приглушённый акцент, а не серый: ряд должен читаться как один график, а
+   не как фон с единственным цветным столбцом. */
+.bar {
+  width: 100%;
+  background: color-mix(in srgb, var(--accent) 38%, var(--surface-2));
+  border-radius: var(--radius-sm) var(--radius-sm) 2px 2px;
+  transition: height 0.3s ease;
+}
+
+/* Текущая неделя в полную силу — она ещё не закончена, и сравнивать её с
+   прошлыми нужно с оговоркой; цвет эту оговорку и держит на виду. */
+.barLast { background: var(--accent); }
+
+.value {
+  font-size: var(--text-footnote);
+  font-weight: 700;
+}
+
+.label {
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.labelLast { color: var(--accent); }

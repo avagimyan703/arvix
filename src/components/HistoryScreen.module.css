@@ -30,12 +30,7 @@
   border-radius: var(--radius);
 }
 
-.volume {
-  margin-top: var(--space-7);
-  padding: var(--space-4);
-  background: var(--surface-2);
-  border-radius: var(--radius);
-}
+.chartBlock { margin-top: var(--space-7); }
 
 .heading {
   margin: 0 0 var(--space-3);
@@ -45,19 +40,97 @@
   color: var(--accent);
 }
 
-.volumeList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
-
-.volumeRow {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
-  font-size: var(--text-body);
+.chartHint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-caption);
+  color: var(--text-dim);
 }
 
-.sets { font-weight: 600; color: var(--accent); }
+.volumeList {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
 
-.volumeHint {
-  margin: var(--space-3) 0 0;
+/* Название — фиксированной ширины, полоса тянется, число прижато вправо:
+   так полосы начинаются от общей вертикали и их длины сравнимы на глаз. */
+.volumeRow {
+  display: grid;
+  grid-template-columns: minmax(0, 124px) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+/* Названия групп бывают длинными («Бицепс бедра», «Ромбовидные»), и в узкую
+   колонку они не влезали. Переносим на вторую строку вместо многоточия:
+   обрезанное название не подсказывает ничего. */
+.volumeName {
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.volumeTrack {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.volumeFill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.sets { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.line {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* Ломаная тянется по ширине карточки, поэтому preserveAspectRatio="none":
+   на узком телефоне и на планшете она займёт всю доступную ширину. */
+.lineSvg {
+  display: block;
+  width: 100%;
+  height: 56px;
+  overflow: visible;
+}
+
+.linePath {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.lineDot { fill: var(--accent); }
+
+.lineMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.lineNow {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.lineRange {
   font-size: var(--text-caption);
   color: var(--text-dim);
 }

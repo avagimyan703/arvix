@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { exportText, weekVolume, sessionDuration } from '../lib/history.js'
+import { workoutsPerWeek, durationTrend } from '../lib/charts.js'
+import { sparklinePoints } from '../lib/sparkline.js'
 import { formatWeight, pluralRu } from '../lib/format.js'
+import BarChart from './BarChart.jsx'
 import styles from './HistoryScreen.module.css'
 
 const WORKOUT_FORMS = ['тренировка', 'тренировки', 'тренировок']
+
+// Восемь недель — два месяца: достаточно, чтобы увидеть ритм и провалы,
+// и достаточно мало, чтобы столбцы на телефоне остались различимы.
+const WEEKS = 8
 
 // Сколько последних тренировок реально рисуем на экране. С годами дневник
 // растёт на тысячи записей — рендерить их все в DOM разом заметно тормозит
@@ -70,6 +77,17 @@ export default function HistoryScreen({
     return Object.entries(v).sort((a, b) => b[1] - a[1])
   })()
 
+  // Столбцы подписываем днём и месяцем начала недели: год на графике за два
+  // месяца не нужен, а места занимает столько же, сколько сама дата.
+  const frequency = workoutsPerWeek(history, WEEKS, new Date()).map((b) => {
+    const [, m, d] = b.start.split('-')
+    return { label: `${d}.${m}`, value: b.count }
+  })
+
+  const durations = durationTrend(history, 12)
+  const durationLine = sparklinePoints(durations, { width: 280, height: 56, padding: 6 })
+  const maxVolume = volume.length > 0 ? volume[0][1] : 0
+
   return (
     <div className={styles.screen}>
       <button className={styles.back} onClick={onBack}>← Дни</button>
@@ -84,18 +102,60 @@ export default function HistoryScreen({
             {copied ? 'Скопировано ✓' : 'Скопировать для разбора'}
           </button>
 
+          <section className={styles.chartBlock}>
+            <h2 className={styles.heading}>Тренировки по неделям</h2>
+            <BarChart bars={frequency} caption={`Тренировок по неделям за ${WEEKS} недель`} />
+            <p className={styles.chartHint}>Последний столбец — текущая неделя, она ещё не закончена</p>
+          </section>
+
           {volume.length > 0 && (
-            <section className={styles.volume}>
+            <section className={styles.chartBlock}>
               <h2 className={styles.heading}>Объём за неделю</h2>
               <ul className={styles.volumeList}>
                 {volume.map(([muscle, sets]) => (
                   <li key={muscle} className={styles.volumeRow}>
-                    <span>{muscle}</span>
+                    <span className={styles.volumeName}>{muscle}</span>
+                    {/* Полоса длиной от самой нагруженной группы: сравнивать
+                        нужно мышцы между собой, а не с выдуманной нормой. */}
+                    <span className={styles.volumeTrack}>
+                      <span
+                        className={styles.volumeFill}
+                        style={{ width: `${Math.max(4, (sets / maxVolume) * 100)}%` }}
+                      />
+                    </span>
                     <span className={styles.sets}>{sets}</span>
                   </li>
                 ))}
               </ul>
-              <p className={styles.volumeHint}>Рабочих подходов по первичным мышцам</p>
+              <p className={styles.chartHint}>Рабочих подходов по первичным мышцам</p>
+            </section>
+          )}
+
+          {durationLine && (
+            <section className={styles.chartBlock}>
+              <h2 className={styles.heading}>Длительность</h2>
+              <div className={styles.line}>
+                <svg
+                  className={styles.lineSvg}
+                  viewBox="0 0 280 56"
+                  preserveAspectRatio="none"
+                  role="img"
+                  aria-label={`Длительность последних тренировок: от ${Math.min(...durations)} до ${Math.max(...durations)} минут`}
+                >
+                  <polyline
+                    className={styles.linePath}
+                    points={durationLine.points}
+                    fill="none"
+                  />
+                  <circle className={styles.lineDot} cx={durationLine.last.x} cy={durationLine.last.y} r="3.5" />
+                </svg>
+                <div className={styles.lineMeta}>
+                  <span className={styles.lineNow}>{durations.at(-1)} мин</span>
+                  <span className={styles.lineRange}>
+                    {Math.min(...durations)}–{Math.max(...durations)} за {durations.length} последних
+                  </span>
+                </div>
+              </div>
             </section>
           )}
 
