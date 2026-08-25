@@ -1,4 +1,4 @@
-.picker { padding: 0 var(--space-4) var(--space-6); }
+.picker { padding: 0 var(--space-4); }
 
 .title {
   margin: 0 0 var(--space-2);
@@ -84,10 +84,21 @@
   color: var(--text-dim);
 }
 
+/* Кнопка прижата к низу шторки и не уезжает вместе со списком: в каталоге
+   две с лишним сотни строк, и докручивать их до «Готово» после каждой
+   правки состава — работа, которой быть не должно.
+   Отрицательные поля растягивают подложку на всю ширину шторки: у .picker
+   есть боковые отступы, и без них список просвечивал бы по краям панели. */
 .actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: grid;
   gap: var(--space-2);
-  margin-top: var(--space-7);
+  margin: var(--space-6) calc(var(--space-4) * -1) 0;
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--line);
 }
 
 .save {
