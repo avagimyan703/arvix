@@ -172,3 +172,56 @@
   color: var(--accent);
   border-top: 1px solid var(--line);
 }
+
+/* Чипы прокручиваются вбок, отрицательные поля — чтобы крайние не липли
+   к краям панели при прокрутке. */
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 calc(var(--space-1) * -1) var(--space-5);
+  padding: 2px var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex: none;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-footnote);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.chipOn {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Кадр упражнения размером с ноготь. Размер держит эта коробка: внутри
+   может оказаться и картинка, и svg-силуэт, который сам по себе тянется
+   на всю ширину родителя. */
+.preview {
+  flex: none;
+  display: block;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+/* Ролики вертикальные — обрезаем по центру: в квадрате нужен человек со
+   снарядом, а не полосы пустого фона сверху и снизу. */
+.previewImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

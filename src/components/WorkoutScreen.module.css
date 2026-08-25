@@ -137,3 +137,15 @@
   font-size: var(--text-footnote);
   color: var(--text-dim);
 }
+
+/* Группа мышц в составе тренировки. Заголовок появляется только когда
+   групп больше одной — см. WorkoutScreen. */
+.group { margin-bottom: var(--space-6); }
+
+.groupName {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}

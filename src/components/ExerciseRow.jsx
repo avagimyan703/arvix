@@ -5,7 +5,6 @@ import ExercisePreview from './ExercisePreview.jsx'
 import { formatTime } from '../lib/timer.js'
 import { formatWeight, stepWeight } from '../lib/format.js'
 import { equipmentIcon } from '../lib/equipment.js'
-import { muscleZone } from '../lib/muscleZone.js'
 import { useHoldStep } from '../hooks/useHoldStep.js'
 import styles from './ExerciseRow.module.css'
 
@@ -66,7 +65,6 @@ function ExerciseRow({
   // кружкам внутри, чтобы прогресс тренировки читался с одного взгляда.
   const allDone = reps != null && reps.length === block.sets && reps.every((r) => r != null)
   const icon = equipmentIcon(exercise.equipment)
-  const zone = muscleZone(exercise.primary)
 
   return (
     <article className={allDone ? `${styles.row} ${styles.done}` : styles.row}>
@@ -139,14 +137,11 @@ function ExerciseRow({
       {/* Во всю высоту карточки, не только строку заголовка — иначе на
           телефоне картинка выходит слишком мелкой, чтобы на бегу между
           подходами различить упражнение с одного взгляда. */}
-      {(exercise.video || zone) && (
+      {/* Без ролика превью не показываем вовсе. Техника при этом не теряется:
+          имя упражнения выше — та же кнопка, открывающая разбор. */}
+      {exercise.video && (
         <button className={styles.preview} onClick={handleOpen} aria-label={`Техника: ${exercise.name}`}>
-          <ExercisePreview
-            videoId={exercise.video}
-            view={zone?.view}
-            zone={zone?.zone}
-            className={styles.previewImg}
-          />
+          <ExercisePreview videoId={exercise.video} className={styles.previewImg} />
         </button>
       )}
     </article>

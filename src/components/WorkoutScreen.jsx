@@ -10,7 +10,7 @@ import { formatWeight } from '../lib/format.js'
 import { appendSession } from '../lib/history.js'
 import { currentStreak, newRecords, milestoneReached } from '../lib/achievements.js'
 import { isBlockDone, sessionProgress } from '../lib/workout.js'
-import { catalogBlock } from '../lib/exercisePool.js'
+import { catalogBlock, categoryOf, categoryRank } from '../lib/exercisePool.js'
 import { useRestTimer } from '../hooks/useRestTimer.js'
 import styles from './WorkoutScreen.module.css'
 
@@ -38,10 +38,37 @@ export default function WorkoutScreen({
   }, [program, exercises])
 
   // Состав сегодняшней тренировки. Пока не выбирали — план дня как был.
-  const blocks = useMemo(() => {
+  const picked = useMemo(() => {
     if (!current?.picked) return day.blocks
     return current.picked.map(blockFor).filter(Boolean)
   }, [current?.picked, day.blocks, blockFor])
+
+  // Разбивка по группам мышц. Порядок групп задан один раз в categoryRank
+  // и не зависит от того, в каком порядке упражнения попали в состав: иначе
+  // один и тот же день выглядел бы по-разному в зависимости от того, что
+  // выбрали первым. Порядок внутри группы сохраняется — программа ставит
+  // базовое раньше подсобного, и перетасовывать это нельзя.
+  //
+  // Само по себе это меняет последовательность выполнения — грудь и спина
+  // в плане чередуются, а здесь соберутся в блоки. Сделано осознанно: так
+  // видно, что вообще тренируешь, и не приходится держать это в голове.
+  const groups = useMemo(() => {
+    const byCategory = new Map()
+    for (const block of picked) {
+      const id = categoryOf(exercises[block.exercise]) ?? 'other'
+      if (!byCategory.has(id)) byCategory.set(id, [])
+      byCategory.get(id).push(block)
+    }
+    const nameOf = (id) => library.categories.find((c) => c.id === id)?.name ?? 'Прочее'
+    return [...byCategory]
+      .sort(([a], [b]) => categoryRank(a) - categoryRank(b))
+      .map(([id, list]) => ({ id, name: nameOf(id), blocks: list }))
+  }, [picked, exercises, library])
+
+  // Плоский список в том же порядке, что и на экране: прогресс и
+  // автопрокрутка к следующему упражнению обязаны совпадать с тем, что
+  // человек видит, иначе «следующее» окажется выше по странице.
+  const blocks = useMemo(() => groups.flatMap((g) => g.blocks), [groups])
 
   // Упражнения с закрытыми подходами: их нельзя убрать из состава, иначе
   // выбор молча стёр бы сделанную работу.
@@ -237,26 +264,35 @@ export default function WorkoutScreen({
       {/* Список виден сразу, без отдельного «Начать»: можно посмотреть план
           дня, ничего не запуская. Тренировка стартует неявно первым же
           касанием — тапнул подход или поправил вес, и она уже идёт. */}
-      <div className={styles.rows}>
-        {blocks.map((block) => (
-          <div key={block.exercise} ref={(el) => { rowRefs.current[block.exercise] = el }}>
-            <ExerciseRow
-              block={block}
-              exercise={exercises[block.exercise]}
-              exerciseId={block.exercise}
-              reps={current?.reps[block.exercise]}
-              weight={current?.weights[block.exercise] ?? null}
-              lastSession={state.lastSession[block.exercise]}
-              isRecord={records.has(block.exercise)}
-              onWeight={handleWeight}
-              onCloseSet={handleCloseSet}
-              onClearSet={handleClearSet}
-              onOpen={handleOpenExercise}
-              startRest={rest.startRest}
-            />
+      {groups.map((group) => (
+        <section key={group.id} className={styles.group}>
+          {/* Заголовок только когда групп больше одной: над единственным
+              списком он ничего не сообщает, а место занимает. */}
+          {groups.length > 1 && (
+            <h2 className={styles.groupName}>{group.name} · {group.blocks.length}</h2>
+          )}
+          <div className={styles.rows}>
+            {group.blocks.map((block) => (
+              <div key={block.exercise} ref={(el) => { rowRefs.current[block.exercise] = el }}>
+                <ExerciseRow
+                  block={block}
+                  exercise={exercises[block.exercise]}
+                  exerciseId={block.exercise}
+                  reps={current?.reps[block.exercise]}
+                  weight={current?.weights[block.exercise] ?? null}
+                  lastSession={state.lastSession[block.exercise]}
+                  isRecord={records.has(block.exercise)}
+                  onWeight={handleWeight}
+                  onCloseSet={handleCloseSet}
+                  onClearSet={handleClearSet}
+                  onOpen={handleOpenExercise}
+                  startRest={rest.startRest}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </section>
+      ))}
 
       <AthleticBlock
         items={day.athletic}
@@ -298,6 +334,7 @@ export default function WorkoutScreen({
           {(close) => (
             <ExercisePicker
               exercises={exercises}
+              categories={library.categories}
               blockFor={blockFor}
               dayBlocks={day.blocks}
               picked={blocks.map((b) => b.exercise)}

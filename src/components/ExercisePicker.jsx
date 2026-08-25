@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import ExercisePreview from './ExercisePreview.jsx'
+import { categoryOf, categoryRank } from '../lib/exercisePool.js'
 import styles from './ExercisePicker.module.css'
 
 const normalize = (s) => String(s ?? '').toLowerCase().replace(/ё/g, 'е')
@@ -14,14 +16,19 @@ const normalize = (s) => String(s ?? '').toLowerCase().replace(/ё/g, 'е')
  * Разница помечена, чтобы выбор был осознанным, а не сюрпризом на месте.
  *
  * Выбранное всегда сверху и всегда доступно: иначе снять лишнее можно было
- * бы, только вспомнив, в какой группе оно лежало.
+ * бы, только вспомнив, в какой группе оно лежало. По той же причине фильтр
+ * по категории на выбранное не действует — спрятать уже отмеченное значит
+ * потерять его из виду.
  *
  * Упражнение, по которому уже закрыт хотя бы один подход, снять нельзя —
  * иначе выбор молча стирал бы сделанную работу.
  */
-export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked, locked, onSave, onClose }) {
+export default function ExercisePicker({
+  exercises, categories, blockFor, dayBlocks, picked, locked, onSave, onClose,
+}) {
   const [chosen, setChosen] = useState(() => new Set(picked))
   const [query, setQuery] = useState('')
+  const [chip, setChip] = useState(null)
 
   const dayOrder = useMemo(() => dayBlocks.map((b) => b.exercise), [dayBlocks])
 
@@ -34,15 +41,22 @@ export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked,
 
   const chosenIds = useMemo(() => order.filter((id) => chosen.has(id)), [order, chosen])
 
+  // Кандидаты на добавление: не выбранные, с параметрами подхода и
+  // подходящие под фильтр. Финишеры сюда не попадают — у них нет блока.
+  const pool = useMemo(() => order.filter((id) => (
+    !chosen.has(id)
+    && blockFor(id)
+    && (chip === null || categoryOf(exercises[id]) === chip)
+  )), [order, chosen, blockFor, chip, exercises])
+
   const matches = useMemo(() => {
     const tokens = normalize(query).split(/\s+/).filter(Boolean)
-    const rest = order.filter((id) => !chosen.has(id) && blockFor(id))
     if (tokens.length === 0) return null
-    return rest.filter((id) => {
+    return pool.filter((id) => {
       const hay = normalize(exercises[id].name)
       return tokens.every((t) => hay.includes(t))
     })
-  }, [query, order, chosen, exercises, blockFor])
+  }, [query, pool, exercises])
 
   // Без запроса показываем всё: библиотеку по мышцам, каталог по категориям.
   // Разборы держим отдельной секцией, а не подмешиваем к библиотеке —
@@ -50,8 +64,11 @@ export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked,
   // «Грудь» из каталога), и рядом это читалось бы как две разные мышцы.
   const idle = useMemo(() => {
     if (matches !== null) return null
-    const rest = order.filter((id) => !chosen.has(id) && blockFor(id))
 
+    // Группы идут в общем порядке категорий — том же, что и на экране
+    // тренировки. Внутри секции названия разного уровня («Грудные» и «Верх
+    // грудных» — обе грудь), поэтому у соседних групп ранг совпадает;
+    // сортировка устойчивая и оставляет их так, как они лежат в библиотеке.
     const byGroup = (ids) => {
       const groups = {}
       for (const id of ids) {
@@ -59,15 +76,32 @@ export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked,
         ;(groups[name] = groups[name] ?? []).push(id)
       }
       return Object.entries(groups)
+        .sort(([, a], [, b]) => (
+          categoryRank(categoryOf(exercises[a[0]])) - categoryRank(categoryOf(exercises[b[0]]))
+        ))
     }
 
-    const catalog = rest.filter((i) => exercises[i].fromCatalog)
+    const catalog = pool.filter((i) => exercises[i].fromCatalog)
     return {
-      library: byGroup(rest.filter((i) => !exercises[i].fromCatalog)),
+      library: byGroup(pool.filter((i) => !exercises[i].fromCatalog)),
       catalog: byGroup(catalog),
       catalogTotal: catalog.length,
     }
-  }, [matches, order, chosen, exercises, blockFor])
+  }, [matches, pool, exercises])
+
+  // Категории, в которых вообще есть что выбрать: пустая кнопка-фильтр
+  // обещает результат, которого нет.
+  const chips = useMemo(() => {
+    const present = new Set()
+    for (const id of order) {
+      if (chosen.has(id) || !blockFor(id)) continue
+      const c = categoryOf(exercises[id])
+      if (c) present.add(c)
+    }
+    return categories
+      .filter((c) => present.has(c.id) || c.id === chip)
+      .sort((a, b) => categoryRank(a.id) - categoryRank(b.id))
+  }, [order, chosen, blockFor, exercises, categories, chip])
 
   function toggle(id) {
     if (locked.has(id)) return
@@ -95,6 +129,13 @@ export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked,
           <span className={on ? `${styles.mark} ${styles.markOn}` : styles.mark} aria-hidden="true">
             {on ? '✓' : ''}
           </span>
+          {/* Без ролика кадра нет — и коробки тоже: пустой серый квадрат
+              читался бы как недогрузившаяся картинка. */}
+          {ex.video && (
+            <span className={styles.preview}>
+              <ExercisePreview videoId={ex.video} className={styles.previewImg} />
+            </span>
+          )}
           <span className={styles.text}>
             <span className={styles.name}>{ex.name}</span>
             <span className={styles.meta}>
@@ -136,12 +177,36 @@ export default function ExercisePicker({ exercises, blockFor, dayBlocks, picked,
         )}
       </div>
 
+      {/* Чипы прокручиваются вбок: девять категорий в один ряд на телефоне
+          не помещаются, а перенос съел бы пол-экрана до первой строки. */}
+      <div className={styles.chips}>
+        <button
+          className={chip === null ? `${styles.chip} ${styles.chipOn}` : styles.chip}
+          aria-pressed={chip === null}
+          onClick={() => setChip(null)}
+        >
+          Все
+        </button>
+        {chips.map((c) => (
+          <button
+            key={c.id}
+            className={chip === c.id ? `${styles.chip} ${styles.chipOn}` : styles.chip}
+            aria-pressed={chip === c.id}
+            onClick={() => setChip(chip === c.id ? null : c.id)}
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+
       {matches !== null ? (
         <section className={styles.group}>
           <h3 className={styles.groupName}>Найдено · {matches.length}</h3>
           {matches.length > 0
             ? <ul className={styles.list}>{matches.map(row)}</ul>
-            : <p className={styles.nothing}>Ничего не нашлось. Попробуй короче — например «жим».</p>}
+            : <p className={styles.nothing}>
+                Ничего не нашлось{chip !== null && ' в этой категории'}. Попробуй короче — например «жим».
+              </p>}
         </section>
       ) : (
         <>
